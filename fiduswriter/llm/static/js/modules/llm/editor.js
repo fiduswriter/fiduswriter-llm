@@ -1,4 +1,4 @@
-import {addAlert, postJson, gettext} from "fwtoolkit"
+import {addAlert, postJson, gettext, interpolate, ProgressTask} from "fwtoolkit"
 
 import {LLMDialog} from "./dialog"
 import {
@@ -257,21 +257,39 @@ export class EditorLLM {
     }
 
     async improveText({prompt, outputMode, view, blocks}) {
-        const message =
+        const title =
             outputMode === "comments"
                 ? gettext("Asking LLM for comments...")
                 : gettext("Sending text to LLM...")
-        addAlert("info", message)
+        const abortController = new AbortController()
+        const totalBlocks = blocks.length
+        const progress = new ProgressTask("info", {
+            title,
+            message: gettext("Preparing..."),
+            percentage: 0,
+            cancelable: true,
+            onCancel: () => abortController.abort()
+        })
+        progress.open()
 
         try {
             if (outputMode === "proposals") {
                 const results = []
-                for (const block of blocks) {
+                for (let i = 0; i < blocks.length; i++) {
+                    const block = blocks[i]
+                    progress.update(
+                        Math.round((i / totalBlocks) * 100),
+                        interpolate(gettext("Processing block %s of %s..."), [
+                            i + 1,
+                            totalBlocks
+                        ])
+                    )
                     const improvedText = await this.improveBlock({
                         prompt,
                         outputMode,
                         view,
-                        block
+                        block,
+                        signal: abortController.signal
                     })
                     results.push({block, improvedText})
                 }
@@ -281,15 +299,29 @@ export class EditorLLM {
                 // sees progress, especially for comments.
                 const llmUser = this.getLLMUser()
                 const results = []
-                for (const block of blocks) {
+                for (let i = 0; i < blocks.length; i++) {
+                    const block = blocks[i]
+                    progress.update(
+                        Math.round((i / totalBlocks) * 100),
+                        interpolate(gettext("Processing block %s of %s..."), [
+                            i + 1,
+                            totalBlocks
+                        ])
+                    )
                     const improvedText = await this.improveBlock({
                         prompt,
                         outputMode,
                         view,
-                        block
+                        block,
+                        signal: abortController.signal
                     })
                     if (outputMode === "comments") {
-                        this.applyComments({view, block, commentsText: improvedText, llmUser})
+                        this.applyComments({
+                            view,
+                            block,
+                            commentsText: improvedText,
+                            llmUser
+                        })
                     } else {
                         // For direct/changes modes processing in document order
                         // would invalidate later positions, so collect and apply
@@ -298,7 +330,9 @@ export class EditorLLM {
                     }
                 }
                 if (outputMode !== "comments") {
-                    const sortedResults = results.slice().sort((a, b) => b.block.from - a.block.from)
+                    const sortedResults = results
+                        .slice()
+                        .sort((a, b) => b.block.from - a.block.from)
                     for (const {block, improvedText} of sortedResults) {
                         this.applyImprovedBlock({
                             view,
@@ -311,19 +345,32 @@ export class EditorLLM {
                 }
             }
 
+            progress.update(100, gettext("Done"))
+            progress.close()
+
             const doneMessage =
                 outputMode === "comments"
                     ? gettext("LLM comments added.")
                     : outputMode === "proposals"
-                      ? gettext("LLM proposals created. Right-click a highlighted passage to review.")
+                      ? gettext(
+                            "LLM proposals created. Right-click a highlighted passage to review."
+                        )
                       : gettext("LLM improvement applied.")
             addAlert("info", doneMessage)
         } catch (error) {
-            addAlert("error", error.message || gettext("Could not apply LLM improvement."))
+            progress.close()
+            if (error.name === "AbortError") {
+                addAlert("info", gettext("LLM improvement cancelled."))
+            } else {
+                addAlert(
+                    "error",
+                    error.message || gettext("Could not apply LLM improvement.")
+                )
+            }
         }
     }
 
-    async improveBlock({prompt, outputMode, view, block}) {
+    async improveBlock({prompt, outputMode, view, block, signal}) {
         const blockTypeName = BLOCK_TYPE_LABELS[block.node.type.name] || gettext("text passage")
         const allBlocks = this.getAllTextBlocks(view)
         const context = this.getBlockContext(allBlocks, block)
@@ -367,10 +414,15 @@ export class EditorLLM {
 
         const fullPrompt = `${instructionText}\n\n---\n\n${finalInstruction}\n\n${gettext("TEXT TO IMPROVE:")}\n${block.text}`
 
-        const {json, status} = await postJson("/api/llm/improve/", {
-            text: block.text,
-            prompt: fullPrompt
-        })
+        const {json, status} = await postJson(
+            "/api/llm/improve/",
+            {
+                text: block.text,
+                prompt: fullPrompt
+            },
+            {},
+            {signal}
+        )
 
         if (status !== 200) {
             throw new Error(json.error || gettext("LLM request failed."))
