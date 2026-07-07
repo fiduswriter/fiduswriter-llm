@@ -58,14 +58,23 @@ export class LLMProfile {
         const statusEl = this.profile.dom.querySelector("#llm-model-status")
         const selectEl = this.profile.dom.querySelector("#llm-model")
         const modelManual = this.profile.dom.querySelector("#llm-model-manual")
+        const serverKey = Boolean(this.profile.app.settings.LLM_API_KEY_CONFIGURED)
 
-        if (!url || !apiKey) {
-            statusEl.textContent = gettext("Please enter both URL and API key.")
+        if (!url) {
+            statusEl.textContent = gettext("Please enter an API URL.")
+            return
+        }
+        if (!apiKey && !serverKey) {
+            statusEl.textContent = gettext("Please enter an API key.")
             return
         }
 
         statusEl.textContent = gettext("Fetching models...")
-        postJson("/api/llm/models/", {url, api_key: apiKey})
+        const payload = {url}
+        if (apiKey) {
+            payload.api_key = apiKey
+        }
+        postJson("/api/llm/models/", payload)
             .then(({json, status}) => {
                 if (status !== 200) {
                     statusEl.textContent =

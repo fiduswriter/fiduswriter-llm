@@ -1,6 +1,12 @@
 import {addAlert, postJson} from "fwtoolkit"
 
 import {LLMDialog} from "./dialog"
+import {
+    llmPlugin,
+    removeAllProposals,
+    removeProposal,
+    setProposals
+} from "./state_plugin"
 
 const TEXT_BLOCK_TYPES = [
     "title",
@@ -34,6 +40,8 @@ const PLACEHOLDER_TYPES = ["citation", "equation", "cross_reference"]
 
 const PLACEHOLDER_PATTERN = /\[NODE:\s*(\w+)\s*:\s*(\d+)\s*\]/gi
 
+let proposalIdCounter = 0
+
 export class EditorLLM {
     constructor(editor) {
         this.editor = editor
@@ -42,23 +50,40 @@ export class EditorLLM {
     init() {
         this.addToolsMenuItem()
         this.addSelectionMenuItem()
+        this.addStatePlugin()
+        this.addStyles()
+    }
+
+    addStyles() {
+        const styleEl = document.createElement("style")
+        styleEl.innerHTML = `
+            .llm-proposal {
+                background-color: rgba(255, 235, 59, 0.4);
+                border-bottom: 2px wavy #f57f17;
+                cursor: pointer;
+            }
+        `
+        document.head.appendChild(styleEl)
+    }
+
+    addStatePlugin() {
+        this.editor.statePlugins.push([
+            llmPlugin,
+            () => ({editor: this.editor, editorLlm: this})
+        ])
     }
 
     addToolsMenuItem() {
+        if (!this.isLLMConfigured()) {
+            return
+        }
         const toolMenu = this.editor.menu.headerbarModel.content.find(
             menu => menu.id === "tools"
         )
 
-        const llmConfigured =
-            this.editor.app.settings.LLM_API_KEY_CONFIGURED ||
-            this.editor.app.settings.LLM_URL ||
-            this.editor.user.preferences?.llm_url ||
-            this.editor.user.preferences?.llm_api_key
-
         toolMenu.content.unshift({
             title: gettext("LLM text improvement"),
             type: "menu",
-            hidden: () => !llmConfigured,
             disabled: editor =>
                 editor.docInfo.access_rights !== "write" || editor.app.isOffline(),
             content: [
@@ -72,17 +97,26 @@ export class EditorLLM {
                         this.openDialog({mode: "full"})
                     },
                     disabled: editor => editor.app.isOffline()
+                },
+                {
+                    title: gettext("Clear LLM proposals"),
+                    type: "action",
+                    tooltip: gettext(
+                        "Remove any LLM change proposals from the document."
+                    ),
+                    action: _editor => {
+                        this.clearProposals()
+                    },
+                    disabled: editor => editor.app.isOffline()
                 }
             ]
         })
     }
 
     addSelectionMenuItem() {
-        const llmConfigured =
-            this.editor.app.settings.LLM_API_KEY_CONFIGURED ||
-            this.editor.app.settings.LLM_URL ||
-            this.editor.user.preferences?.llm_url ||
-            this.editor.user.preferences?.llm_api_key
+        if (!this.isLLMConfigured()) {
+            return
+        }
 
         this.editor.menu.selectionMenuModel.content.push({
             type: "button",
@@ -96,7 +130,6 @@ export class EditorLLM {
                 editor.docInfo.access_rights !== "write" ||
                 editor.app.isOffline(),
             hidden: editor =>
-                !llmConfigured ||
                 editor.currentView.state.selection.$anchor.depth < 1,
             order: 5
         })
@@ -114,7 +147,7 @@ export class EditorLLM {
         const dialog = new LLMDialog(this.editor, {
             text: target.blocks.map(b => b.text).join("\n\n"),
             prompt: "",
-            mode: "changes",
+            mode: "proposals",
             onSubmit: (prompt, outputMode) => {
                 this.improveText({
                     prompt,
@@ -125,6 +158,33 @@ export class EditorLLM {
             }
         })
         dialog.init()
+    }
+
+    clearProposals() {
+        const view = this.editor.currentView
+        const tr = removeAllProposals(view.state)
+        if (tr) {
+            view.dispatch(tr)
+        }
+    }
+
+    getLLMUser() {
+        const settings = this.editor.app.settings
+        const prefs = this.editor.user.preferences || {}
+        const model = prefs.llm_model || settings.LLM_MODEL || gettext("unknown model")
+        return {
+            id: 0,
+            username: `LLM (${model})`
+        }
+    }
+
+    isLLMConfigured() {
+        const settings = this.editor.app.settings
+        const prefs = this.editor.user.preferences || {}
+        return Boolean(
+            settings.LLM_API_KEY_CONFIGURED ||
+                prefs.llm_api_key
+        )
     }
 
     getTarget(mode, view) {
@@ -204,15 +264,44 @@ export class EditorLLM {
         addAlert("info", message)
 
         try {
-            // Process from last block to first so positions stay valid.
-            const sortedBlocks = blocks.slice().sort((a, b) => b.from - a.from)
-            for (const block of sortedBlocks) {
-                await this.improveBlock({prompt, outputMode, view, block})
+            const results = []
+            for (const block of blocks) {
+                const improvedText = await this.improveBlock({
+                    prompt,
+                    outputMode,
+                    view,
+                    block
+                })
+                results.push({block, improvedText})
             }
+
+            if (outputMode === "proposals") {
+                this.createProposals({view, results})
+            } else {
+                // Process from last to first so positions stay valid.
+                const llmUser = this.getLLMUser()
+                const sortedResults = results.slice().sort((a, b) => b.block.from - a.block.from)
+                for (const {block, improvedText} of sortedResults) {
+                    if (outputMode === "comments") {
+                        this.applyComments({view, block, commentsText: improvedText, llmUser})
+                    } else {
+                        this.applyImprovedBlock({
+                            view,
+                            block,
+                            improvedText,
+                            asTracked: outputMode === "changes",
+                            llmUser
+                        })
+                    }
+                }
+            }
+
             const doneMessage =
                 outputMode === "comments"
                     ? gettext("LLM comments added.")
-                    : gettext("LLM improvement applied as suggestion.")
+                    : outputMode === "proposals"
+                      ? gettext("LLM proposals created. Right-click a highlighted passage to review.")
+                      : gettext("LLM improvement applied.")
             addAlert("info", doneMessage)
         } catch (error) {
             addAlert("error", error.message || gettext("Could not apply LLM improvement."))
@@ -250,7 +339,18 @@ export class EditorLLM {
             instructionText += `\n\n${gettext("Do not rewrite the text. Instead, briefly explain what could be improved about it. Respond with one or more short comments, one per line.")}`
         }
 
-        const fullPrompt = `${instructionText}\n\n---\n\n${gettext("Return ONLY the improved version of the provided text. Do not include these instructions, the context, or any explanations in your response. Do not quote the text. Preserve all placeholders exactly.")}`
+        let finalInstruction
+        if (outputMode === "comments") {
+            finalInstruction = gettext(
+                "Return ONLY one or more short comments, one per line. Do not include these instructions, the context, or any explanations. Do not rewrite the text."
+            )
+        } else {
+            finalInstruction = gettext(
+                "Return ONLY the improved version of the text below. Do not include these instructions, the context, or any explanations in your response. Do not quote the text. Preserve all placeholders exactly."
+            )
+        }
+
+        const fullPrompt = `${instructionText}\n\n---\n\n${finalInstruction}\n\n${gettext("TEXT TO IMPROVE:")}\n${block.text}`
 
         const {json, status} = await postJson("/api/llm/improve/", {
             text: block.text,
@@ -261,11 +361,7 @@ export class EditorLLM {
             throw new Error(json.error || gettext("LLM request failed."))
         }
 
-        if (outputMode === "comments") {
-            this.applyComments({view, block, commentsText: json.text})
-        } else {
-            this.applyImprovedBlock({view, block, improvedText: json.text})
-        }
+        return this.normalizePlaceholders(json.text)
     }
 
     getAllTextBlocks(view) {
@@ -305,36 +401,77 @@ export class EditorLLM {
         return text.replace(PLACEHOLDER_PATTERN, "[NODE:$1:$2]")
     }
 
-    applyImprovedBlock({view, block, improvedText}) {
+    createProposals({view, results}) {
+        const llmUser = this.getLLMUser()
+        const proposals = results.map(({block, improvedText}) => {
+            proposalIdCounter += 1
+            return {
+                id: proposalIdCounter,
+                from: block.from + 1,
+                to: block.to - 1,
+                originalText: block.text,
+                improvedText,
+                block,
+                llmUser,
+                username: llmUser.username
+            }
+        })
+
+        const tr = setProposals(view.state, proposals)
+        if (tr) {
+            view.dispatch(tr)
+        }
+    }
+
+    removeProposal(view, proposalId) {
+        const tr = removeProposal(view.state, proposalId)
+        if (tr) {
+            view.dispatch(tr)
+        }
+    }
+
+    applyImprovedBlock({view, block, improvedText, asTracked = false, llmUser}) {
         const schema = view.state.schema
-        const user = this.editor.user
+        const user = llmUser || this.getLLMUser()
         const date = Date.now() - this.editor.clientTimeAdjustment
 
-        const normalizedText = this.normalizePlaceholders(improvedText)
-
-        const insertionMark = schema.marks.insertion.create({
-            user: user.id || 0,
-            username: user.username || user.name || "",
-            date,
-            approved: false
-        })
-        const deletionMark = schema.marks.deletion.create({
-            user: user.id || 0,
-            username: user.username || user.name || "",
-            date
-        })
+        const insertionMark = asTracked
+            ? schema.marks.insertion.create({
+                  user: user.id,
+                  username: user.username,
+                  date,
+                  approved: false
+              })
+            : null
 
         const newNodes = this.deserializeImprovedText(
-            normalizedText,
+            improvedText,
             block.placeholders,
             schema,
             insertionMark
         )
 
+        if (!asTracked) {
+            const tr = view.state.tr
+                .replaceWith(block.from + 1, block.to - 1, newNodes)
+                .setMeta("llm", true)
+            view.dispatch(tr)
+            view.focus()
+            return
+        }
+
+        const deletionMark = schema.marks.deletion.create({
+            user: user.id,
+            username: user.username,
+            date
+        })
+
         const oldNodes = []
         block.node.forEach(child => {
             if (child.isText) {
-                oldNodes.push(schema.text(child.text, [...child.marks, deletionMark]))
+                oldNodes.push(
+                    schema.text(child.text, [...child.marks, deletionMark])
+                )
             } else {
                 oldNodes.push(child.mark(child.marks.concat(deletionMark)))
             }
@@ -343,12 +480,11 @@ export class EditorLLM {
         const tr = view.state.tr
             .replaceWith(block.from + 1, block.to - 1, [...oldNodes, ...newNodes])
             .setMeta("llm", true)
-
         view.dispatch(tr)
         view.focus()
     }
 
-    applyComments({view, block, commentsText}) {
+    applyComments({view, block, commentsText, llmUser}) {
         const store = this.editor.mod?.comments?.store
         if (!store) {
             throw new Error(gettext("Comments are not available."))
@@ -363,14 +499,13 @@ export class EditorLLM {
             return
         }
 
-        const user = this.editor.user
-        const username = user.username || user.name || ""
+        const user = llmUser || this.getLLMUser()
         const date = Date.now() - this.editor.clientTimeAdjustment
 
         comments.forEach(commentText => {
             const commentData = {
-                user: user.id || 0,
-                username,
+                user: user.id,
+                username: user.username,
                 date,
                 comment: [{type: "paragraph", content: [{type: "text", text: commentText}]}],
                 isMajor: false
@@ -408,7 +543,12 @@ export class EditorLLM {
         parts.forEach(part => {
             if (part.kind === "text") {
                 if (part.value.length) {
-                    nodes.push(schema.text(part.value, [insertionMark]))
+                    nodes.push(
+                        schema.text(
+                            part.value,
+                            insertionMark ? [insertionMark] : []
+                        )
+                    )
                 }
             } else {
                 const type = part.type.toLowerCase()
@@ -422,11 +562,16 @@ export class EditorLLM {
                     )
                 }
                 seenPlaceholders.add(key)
-                nodes.push(placeholder.node.mark(placeholder.node.marks.concat(insertionMark)))
+                const marks = insertionMark
+                    ? placeholder.node.marks.concat(insertionMark)
+                    : placeholder.node.marks
+                nodes.push(placeholder.node.mark(marks))
             }
         })
 
-        const missing = placeholders.filter(p => !seenPlaceholders.has(`${p.type}:${p.index}`))
+        const missing = placeholders.filter(
+            p => !seenPlaceholders.has(`${p.type}:${p.index}`)
+        )
         if (missing.length) {
             throw new Error(
                 gettext(

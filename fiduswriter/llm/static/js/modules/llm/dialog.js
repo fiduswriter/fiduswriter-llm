@@ -12,12 +12,12 @@ export class LLMDialog {
     init() {
         this.dialog = new Dialog({
             width: 500,
-            height: 520,
+            height: 580,
             title: gettext("Improve text with LLM"),
             body: dialogTemplate({
                 text: this.options.text || "",
                 prompt: this.prompt,
-                mode: this.options.mode || "changes"
+                mode: this.options.mode || "proposals"
             }),
             buttons: [
                 {
@@ -56,7 +56,7 @@ export class LLMDialog {
         const outputMode =
             this.dialog.dialogEl.querySelector(
                 'input[name="llm-output-mode"]:checked'
-            )?.value || "changes"
+            )?.value || "proposals"
         this.dialog.close()
         this.options.onSubmit(prompt, outputMode)
     }

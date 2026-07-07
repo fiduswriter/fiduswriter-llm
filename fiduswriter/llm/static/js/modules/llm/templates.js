@@ -1,6 +1,6 @@
 import {escapeText} from "fwtoolkit"
 
-export const dialogTemplate = ({text, prompt, mode = "changes"}) =>
+export const dialogTemplate = ({text, prompt, mode = "proposals"}) =>
     `<table class="fw-dialog-table">
         <tr>
             <td>
@@ -20,13 +20,23 @@ export const dialogTemplate = ({text, prompt, mode = "changes"}) =>
         <tr>
             <td>
                 <label>
+                    <input type="radio" name="llm-output-mode" value="proposals" ${mode === "proposals" ? "checked" : ""} />
+                    ${gettext("Review proposed changed before applying (right-click)")}
+                </label>
+                <br />
+                <label>
+                    <input type="radio" name="llm-output-mode" value="direct" ${mode === "direct" ? "checked" : ""} />
+                    ${gettext("Apply proposals directly to the document")}
+                </label>
+                <br />
+                <label>
                     <input type="radio" name="llm-output-mode" value="changes" ${mode === "changes" ? "checked" : ""} />
-                    ${gettext("Apply as tracked changes")}
+                    ${gettext("Apply proposals as tracked changes")}
                 </label>
                 <br />
                 <label>
                     <input type="radio" name="llm-output-mode" value="comments" ${mode === "comments" ? "checked" : ""} />
-                    ${gettext("Add as comments")}
+                    ${gettext("Add LLM suggestions as comments")}
                 </label>
             </td>
         </tr>
@@ -39,6 +49,34 @@ export const dialogTemplate = ({text, prompt, mode = "changes"}) =>
             <td>
                 <div id="llm-text-preview" style="max-height: 200px; overflow-y: auto; border: 1px solid #ccc; padding: 8px; background: #f9f9f9;">
                     ${escapeText(text)}
+                </div>
+            </td>
+        </tr>
+    </table>`
+
+export const reviewDialogTemplate = ({original, improved, username}) =>
+    `<table class="fw-dialog-table">
+        <tr>
+            <td>
+                <label>${gettext("Original text")}</label>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div style="max-height: 120px; overflow-y: auto; border: 1px solid #ccc; padding: 8px; background: #f9f9f9;">
+                    ${escapeText(original)}
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label>${gettext("Proposed text by")} ${escapeText(username)}</label>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div style="max-height: 120px; overflow-y: auto; border: 1px solid #ccc; padding: 8px; background: #f9f9f9;">
+                    ${escapeText(improved)}
                 </div>
             </td>
         </tr>

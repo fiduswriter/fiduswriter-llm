@@ -4,6 +4,7 @@ from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
+from asgiref.sync import sync_to_async
 from httpx import AsyncClient
 
 LLM_URL = getattr(settings, "LLM_URL", "https://openrouter.ai/api/v1/chat/completions")
@@ -58,9 +59,12 @@ async def improve(request):
 
     system_message = (
         "You are a helpful writing assistant. "
-        "Respond only with the improved text, no explanations."
+        "The user provides instructions followed by a TEXT TO IMPROVE section. "
+        "Return ONLY the improved version of the text from that section. "
+        "Do not include the instructions, context, or any explanations. "
+        "Preserve all placeholders such as [NODE:type:index] exactly."
     )
-    user_message = f"{prompt}\n\n{text}"
+    user_message = prompt
 
     payload = {
         "model": config["model"],
@@ -165,12 +169,12 @@ async def models(request):
 
 @login_required
 @require_POST
-def preferences(request):
+async def preferences(request):
     try:
         data = json.loads(request.body)
     except json.JSONDecodeError:
         return JsonResponse({"error": "Invalid JSON."}, status=400)
-    user = request.user
+    user = await request.auser()
     user_preferences = user.preferences or {}
 
     if "url" in data:
@@ -181,6 +185,6 @@ def preferences(request):
         user_preferences["llm_api_key"] = data["api_key"]
 
     user.preferences = user_preferences
-    user.save()
+    await sync_to_async(user.save)()
 
     return JsonResponse(get_user_llm_preferences(user))

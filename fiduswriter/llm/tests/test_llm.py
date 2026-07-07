@@ -1,11 +1,78 @@
 import time
+from unittest.mock import patch
 
+from django.test import TestCase
+from django.urls import reverse
 from testing.live_server import ChannelsLiveServerTestCase
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.common.exceptions import StaleElementReferenceException
 from testing.selenium_helper import SeleniumHelper
+
+
+class LLMViewsTest(TestCase):
+    def setUp(self):
+        from user.models import User
+        self.user = User.objects.create_user(
+            username="Yeti", email="yeti@snowman.com", password="otter1"
+        )
+
+    def test_improve_without_api_key_returns_400(self):
+        self.client.force_login(self.user)
+        response = self.client.post(
+            reverse("llm_improve"),
+            data='{"text": "hello", "prompt": "fix"}',
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, 400)
+        self.assertIn("error", response.json())
+
+    def test_models_without_api_key_returns_400(self):
+        self.client.force_login(self.user)
+        response = self.client.post(
+            reverse("llm_models"),
+            data='{"url": "https://example.com/v1/chat/completions"}',
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, 400)
+        self.assertIn("error", response.json())
+
+    def test_preferences_save_and_return(self):
+        self.client.force_login(self.user)
+        response = self.client.post(
+            reverse("llm_preferences"),
+            data='{"url": "https://example.com/v1/chat/completions", "model": "m", "api_key": "k"}',
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertEqual(data["url"], "https://example.com/v1/chat/completions")
+        self.assertEqual(data["model"], "m")
+        self.assertEqual(data["api_key"], "k")
+
+    @patch("llm.views.AsyncClient")
+    def test_improve_with_api_key_forwards_request(self, mock_client_cls):
+        mock_response = mock_client_cls.return_value.__aenter__.return_value.post.return_value
+        mock_response.status_code = 200
+        mock_response.json = lambda: {"choices": [{"message": {"content": "improved text"}}]}
+
+        self.user.preferences = {"llm_api_key": "user-key", "llm_model": "model-x"}
+        self.user.save()
+        self.client.force_login(self.user)
+
+        response = self.client.post(
+            reverse("llm_improve"),
+            data='{"text": "hello", "prompt": "fix"}',
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["text"], "improved text")
+
+        mock_client_cls.return_value.__aenter__.return_value.post.assert_called_once()
+        _url, kwargs = mock_client_cls.return_value.__aenter__.return_value.post.call_args
+        self.assertEqual(kwargs["headers"]["Authorization"], "Bearer user-key")
+        self.assertEqual(kwargs["json"]["model"], "model-x")
 
 
 class LLMTest(ChannelsLiveServerTestCase, SeleniumHelper):
@@ -58,6 +125,33 @@ class LLMTest(ChannelsLiveServerTestCase, SeleniumHelper):
                 time.sleep(0.1)
                 continue
         self.assertTrue(message_found)
+
+    def test_menu_items_hidden_without_config(self):
+        from user.models import User
+        other_user = User.objects.create_user(
+            username="NoLLM", email="nollm@snowman.com", password="otter1"
+        )
+        self.login_user(other_user, self.driver, self.client)
+        self.driver.get(self.base_url + "/")
+        WebDriverWait(self.driver, self.wait_time).until(
+            EC.element_to_be_clickable(
+                (By.CSS_SELECTOR, ".new_document button")
+            )
+        ).click()
+        WebDriverWait(self.driver, self.wait_time).until(
+            EC.presence_of_element_located((By.CLASS_NAME, "editor-toolbar"))
+        )
+
+        # Open the tools menu.
+        self.driver.find_element(
+            By.XPATH, '//*[@id="header-navigation"]/div[4]/span'
+        ).click()
+        menu_items = [
+            el for el in self.driver.find_elements(
+                By.XPATH, '//*[normalize-space()="LLM text improvement"]'
+            ) if el.is_displayed()
+        ]
+        self.assertEqual(len(menu_items), 0)
 
     def test_menu_items_present(self):
         self.login_user(self.user, self.driver, self.client)
