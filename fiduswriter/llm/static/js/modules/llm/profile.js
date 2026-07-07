@@ -1,4 +1,4 @@
-import {addAlert, escapeText, post, postJson} from "fwtoolkit"
+import {addAlert, escapeText, post, postJson, gettext} from "fwtoolkit"
 
 import {profileTemplate} from "./templates"
 

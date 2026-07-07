@@ -1,4 +1,4 @@
-import {Dialog, addAlert, escapeText, findTarget} from "fwtoolkit"
+import {Dialog, addAlert, escapeText, findTarget, gettext} from "fwtoolkit"
 
 import {dialogTemplate} from "./templates"
 

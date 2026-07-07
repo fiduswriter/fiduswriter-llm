@@ -1,4 +1,4 @@
-import {escapeText} from "fwtoolkit"
+import {escapeText, gettext} from "fwtoolkit"
 
 export const dialogTemplate = ({text, prompt, mode = "proposals"}) =>
     `<table class="fw-dialog-table">

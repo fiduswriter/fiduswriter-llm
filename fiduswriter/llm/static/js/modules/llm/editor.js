@@ -1,4 +1,4 @@
-import {addAlert, postJson} from "fwtoolkit"
+import {addAlert, postJson, gettext} from "fwtoolkit"
 
 import {LLMDialog} from "./dialog"
 import {
