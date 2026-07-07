@@ -60,7 +60,8 @@ async def improve(request):
     system_message = (
         "You are a helpful writing assistant. "
         "The user provides instructions followed by a TEXT TO IMPROVE section. "
-        "Return ONLY the improved version of the text from that section. "
+        "Return ONLY the improved version of the text from that section, "
+        "or the original text unchanged if it is already correct. "
         "Do not include the instructions, context, or any explanations. "
         "Preserve all placeholders such as [NODE:type:index] exactly."
     )

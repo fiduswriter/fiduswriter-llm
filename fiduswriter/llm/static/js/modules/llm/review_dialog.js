@@ -47,10 +47,7 @@ export class LLMReviewDialog {
     applyDirect() {
         this.editorLlm.applyImprovedBlock({
             view: this.view,
-            block: Object.assign({}, this.proposal.block, {
-                from: this.proposal.from,
-                to: this.proposal.to
-            }),
+            block: this.proposal.block,
             improvedText: this.proposal.improvedText,
             asTracked: false,
             llmUser: this.proposal.llmUser
@@ -63,10 +60,7 @@ export class LLMReviewDialog {
     applyTracked() {
         this.editorLlm.applyImprovedBlock({
             view: this.view,
-            block: Object.assign({}, this.proposal.block, {
-                from: this.proposal.from,
-                to: this.proposal.to
-            }),
+            block: this.proposal.block,
             improvedText: this.proposal.improvedText,
             asTracked: true,
             llmUser: this.proposal.llmUser

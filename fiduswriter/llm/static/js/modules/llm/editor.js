@@ -1,4 +1,5 @@
 import {addAlert, postJson, gettext, interpolate, ProgressTask} from "fwtoolkit"
+import {diffWordsWithSpace} from "diff"
 
 import {LLMDialog} from "./dialog"
 import {
@@ -273,6 +274,7 @@ export class EditorLLM {
         progress.open()
 
         try {
+            let proposalCount = 0
             if (outputMode === "proposals") {
                 const results = []
                 for (let i = 0; i < blocks.length; i++) {
@@ -293,7 +295,7 @@ export class EditorLLM {
                     })
                     results.push({block, improvedText})
                 }
-                this.createProposals({view, results})
+                proposalCount = this.createProposals({view, results})
             } else {
                 // Apply each block's result as soon as it arrives so the user
                 // sees progress, especially for comments.
@@ -352,9 +354,11 @@ export class EditorLLM {
                 outputMode === "comments"
                     ? gettext("LLM comments added.")
                     : outputMode === "proposals"
-                      ? gettext(
-                            "LLM proposals created. Right-click a highlighted passage to review."
-                        )
+                      ? proposalCount
+                            ? gettext(
+                                  "LLM proposals created. Right-click a highlighted passage to review."
+                              )
+                            : gettext("No LLM change proposals were necessary.")
                       : gettext("LLM improvement applied.")
             addAlert("info", doneMessage)
         } catch (error) {
@@ -408,7 +412,7 @@ export class EditorLLM {
             )
         } else {
             finalInstruction = gettext(
-                "Return ONLY the improved version of the text below. Do not include these instructions, the context, or any explanations in your response. Do not quote the text. Preserve all placeholders exactly."
+                "Return ONLY the improved version of the text below. If the text is already correct and needs no changes, return it exactly as provided. Do not include these instructions, the context, or any explanations in your response. Do not quote the text. Preserve all placeholders exactly."
             )
         }
 
@@ -468,26 +472,120 @@ export class EditorLLM {
         return text.replace(PLACEHOLDER_PATTERN, "[NODE:$1:$2]")
     }
 
+    docPosFromTextOffset(block, textOffset) {
+        let offset = 0
+        let pos = block.from + 1
+        let placeholderIndex = 0
+        let found = null
+
+        block.node.forEach(child => {
+            if (found !== null || offset > textOffset) {
+                return
+            }
+            if (child.isText) {
+                const len = child.text.length
+                if (offset + len >= textOffset) {
+                    found = pos + (textOffset - offset)
+                    return
+                }
+                offset += len
+                pos += len
+            } else if (child.isInline && PLACEHOLDER_TYPES.includes(child.type.name)) {
+                const placeholder = block.placeholders[placeholderIndex]
+                const idLen = placeholder ? placeholder.id.length : 0
+                if (offset + idLen >= textOffset) {
+                    found = pos
+                    return
+                }
+                offset += idLen
+                pos += child.nodeSize
+                placeholderIndex += 1
+            } else {
+                pos += child.nodeSize
+            }
+        })
+
+        return found !== null ? found : block.to - 1
+    }
+
+    computeChangeRange(originalText, improvedText) {
+        const diffs = diffWordsWithSpace(originalText, improvedText)
+        let firstChange = -1
+        let lastChange = -1
+        let originalOffset = 0
+
+        for (let i = 0; i < diffs.length; i++) {
+            const diff = diffs[i]
+            const prevDiff = i > 0 ? diffs[i - 1] : null
+            if (diff.added) {
+                if (!prevDiff || !prevDiff.removed) {
+                    // Pure insertion: it has no corresponding original text.
+                    if (firstChange < 0) {
+                        firstChange = originalOffset
+                    }
+                    lastChange = originalOffset
+                }
+            } else if (diff.removed) {
+                if (firstChange < 0) {
+                    firstChange = originalOffset
+                }
+                lastChange = originalOffset + diff.value.length
+                originalOffset += diff.value.length
+            } else {
+                originalOffset += diff.value.length
+            }
+        }
+
+        if (firstChange < 0) {
+            return {from: 0, to: 0}
+        }
+
+        // A zero-width inline decoration would be invisible and unclickable.
+        // Expand a pure insertion by one adjacent character if possible.
+        if (firstChange === lastChange) {
+            if (firstChange > 0) {
+                firstChange -= 1
+            } else if (lastChange < originalText.length) {
+                lastChange += 1
+            }
+        }
+
+        return {from: firstChange, to: lastChange}
+    }
+
     createProposals({view, results}) {
         const llmUser = this.getLLMUser()
-        const proposals = results.map(({block, improvedText}) => {
+        const proposals = []
+        results.forEach(({block, improvedText}) => {
+            if (improvedText === block.text) {
+                return
+            }
+            const changeRange = this.computeChangeRange(block.text, improvedText)
+            if (changeRange.from >= changeRange.to) {
+                return
+            }
             proposalIdCounter += 1
-            return {
+            proposals.push({
                 id: proposalIdCounter,
-                from: block.from + 1,
-                to: block.to - 1,
+                from: this.docPosFromTextOffset(block, changeRange.from),
+                to: this.docPosFromTextOffset(block, changeRange.to),
                 originalText: block.text,
                 improvedText,
                 block,
                 llmUser,
                 username: llmUser.username
-            }
+            })
         })
+
+        if (!proposals.length) {
+            return 0
+        }
 
         const tr = setProposals(view.state, proposals)
         if (tr) {
             view.dispatch(tr)
         }
+        return proposals.length
     }
 
     removeProposal(view, proposalId) {

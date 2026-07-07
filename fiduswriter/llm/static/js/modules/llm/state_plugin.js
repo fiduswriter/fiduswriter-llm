@@ -108,7 +108,7 @@ export const llmPlugin = function (options) {
                     if (!deco) {
                         return false
                     }
-                    const proposal = proposals[deco.spec.id]
+                    const proposal = proposals.find(p => p.id === deco.spec.id)
                     if (!proposal) {
                         return false
                     }

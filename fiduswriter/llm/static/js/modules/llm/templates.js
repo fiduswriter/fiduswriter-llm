@@ -1,5 +1,20 @@
 import {escapeText, gettext} from "fwtoolkit"
 
+const PREVIEW_PLACEHOLDER_LABELS = {
+    citation: gettext("citation"),
+    equation: gettext("equation"),
+    cross_reference: gettext("cross-reference")
+}
+
+const PREVIEW_PLACEHOLDER_PATTERN = /\[NODE:\s*(\w+)\s*:\s*(\d+)\s*\]/gi
+
+export const formatPreviewText = text =>
+    escapeText(text).replace(
+        PREVIEW_PLACEHOLDER_PATTERN,
+        (_match, type) =>
+            `[${PREVIEW_PLACEHOLDER_LABELS[type.toLowerCase()] || gettext("non-text element")}]`
+    )
+
 export const dialogTemplate = ({text, prompt, mode = "proposals"}) =>
     `<table class="fw-dialog-table">
         <tr>
@@ -47,8 +62,8 @@ export const dialogTemplate = ({text, prompt, mode = "proposals"}) =>
         </tr>
         <tr>
             <td>
-                <div id="llm-text-preview" style="max-height: 200px; overflow-y: auto; border: 1px solid #ccc; padding: 8px; background: #f9f9f9;">
-                    ${escapeText(text)}
+                <div id="llm-text-preview" style="max-height: 200px; overflow-y: auto; border: 1px solid #ccc; padding: 8px; background: #f9f9f9; white-space: pre-wrap;">
+                    ${formatPreviewText(text)}
                 </div>
             </td>
         </tr>
@@ -63,8 +78,8 @@ export const reviewDialogTemplate = ({original, improved, username}) =>
         </tr>
         <tr>
             <td>
-                <div style="max-height: 120px; overflow-y: auto; border: 1px solid #ccc; padding: 8px; background: #f9f9f9;">
-                    ${escapeText(original)}
+                <div style="max-height: 120px; overflow-y: auto; border: 1px solid #ccc; padding: 8px; background: #f9f9f9; white-space: pre-wrap;">
+                    ${formatPreviewText(original)}
                 </div>
             </td>
         </tr>
@@ -75,8 +90,8 @@ export const reviewDialogTemplate = ({original, improved, username}) =>
         </tr>
         <tr>
             <td>
-                <div style="max-height: 120px; overflow-y: auto; border: 1px solid #ccc; padding: 8px; background: #f9f9f9;">
-                    ${escapeText(improved)}
+                <div style="max-height: 120px; overflow-y: auto; border: 1px solid #ccc; padding: 8px; background: #f9f9f9; white-space: pre-wrap;">
+                    ${formatPreviewText(improved)}
                 </div>
             </td>
         </tr>
