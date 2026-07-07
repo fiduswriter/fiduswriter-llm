@@ -264,27 +264,42 @@ export class EditorLLM {
         addAlert("info", message)
 
         try {
-            const results = []
-            for (const block of blocks) {
-                const improvedText = await this.improveBlock({
-                    prompt,
-                    outputMode,
-                    view,
-                    block
-                })
-                results.push({block, improvedText})
-            }
-
             if (outputMode === "proposals") {
+                const results = []
+                for (const block of blocks) {
+                    const improvedText = await this.improveBlock({
+                        prompt,
+                        outputMode,
+                        view,
+                        block
+                    })
+                    results.push({block, improvedText})
+                }
                 this.createProposals({view, results})
             } else {
-                // Process from last to first so positions stay valid.
+                // Apply each block's result as soon as it arrives so the user
+                // sees progress, especially for comments.
                 const llmUser = this.getLLMUser()
-                const sortedResults = results.slice().sort((a, b) => b.block.from - a.block.from)
-                for (const {block, improvedText} of sortedResults) {
+                const results = []
+                for (const block of blocks) {
+                    const improvedText = await this.improveBlock({
+                        prompt,
+                        outputMode,
+                        view,
+                        block
+                    })
                     if (outputMode === "comments") {
                         this.applyComments({view, block, commentsText: improvedText, llmUser})
                     } else {
+                        // For direct/changes modes processing in document order
+                        // would invalidate later positions, so collect and apply
+                        // from last to first.
+                        results.push({block, improvedText})
+                    }
+                }
+                if (outputMode !== "comments") {
+                    const sortedResults = results.slice().sort((a, b) => b.block.from - a.block.from)
+                    for (const {block, improvedText} of sortedResults) {
                         this.applyImprovedBlock({
                             view,
                             block,
