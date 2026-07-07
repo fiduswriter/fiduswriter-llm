@@ -12,11 +12,12 @@ export class LLMDialog {
     init() {
         this.dialog = new Dialog({
             width: 500,
-            height: 460,
+            height: 520,
             title: gettext("Improve text with LLM"),
             body: dialogTemplate({
                 text: this.options.text || "",
-                prompt: this.prompt
+                prompt: this.prompt,
+                mode: this.options.mode || "changes"
             }),
             buttons: [
                 {
@@ -52,7 +53,11 @@ export class LLMDialog {
             addAlert("error", gettext("Please enter instructions."))
             return
         }
+        const outputMode =
+            this.dialog.dialogEl.querySelector(
+                'input[name="llm-output-mode"]:checked'
+            )?.value || "changes"
         this.dialog.close()
-        this.options.onSubmit(prompt)
+        this.options.onSubmit(prompt, outputMode)
     }
 }

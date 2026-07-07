@@ -10,7 +10,7 @@ export class LLMProfile {
     init() {
         const preferences = this.profile.user.preferences || {}
         const settings = this.profile.app.settings
-        const serverKey = Boolean(settings.LLM_URL && settings.LLM_MODEL)
+        const serverKey = Boolean(settings.LLM_API_KEY_CONFIGURED)
         this.profile.pluginTemplates.push(
             profileTemplate({
                 url: preferences.llm_url || settings.LLM_URL || "",

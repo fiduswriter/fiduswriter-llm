@@ -1,6 +1,6 @@
 import {escapeText} from "fwtoolkit"
 
-export const dialogTemplate = ({text, prompt}) =>
+export const dialogTemplate = ({text, prompt, mode = "changes"}) =>
     `<table class="fw-dialog-table">
         <tr>
             <td>
@@ -10,6 +10,24 @@ export const dialogTemplate = ({text, prompt}) =>
         <tr>
             <td>
                 <textarea id="llm-prompt" rows="4" style="width: 100%;" placeholder="${gettext("e.g. Fix the grammar in this text")}">${escapeText(prompt)}</textarea>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label>${gettext("Output mode")}</label>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label>
+                    <input type="radio" name="llm-output-mode" value="changes" ${mode === "changes" ? "checked" : ""} />
+                    ${gettext("Apply as tracked changes")}
+                </label>
+                <br />
+                <label>
+                    <input type="radio" name="llm-output-mode" value="comments" ${mode === "comments" ? "checked" : ""} />
+                    ${gettext("Add as comments")}
+                </label>
             </td>
         </tr>
         <tr>

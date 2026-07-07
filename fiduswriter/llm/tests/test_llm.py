@@ -71,6 +71,11 @@ class LLMTest(ChannelsLiveServerTestCase, SeleniumHelper):
             EC.presence_of_element_located((By.CLASS_NAME, "editor-toolbar"))
         )
 
+        # Type some text so the LLM has something to improve.
+        body_input = self.driver.find_element(By.CSS_SELECTOR, ".doc-body")
+        body_input.click()
+        body_input.send_keys("Thes text has some erors.")
+
         # Open the tools menu and look for the LLM entry.
         self.driver.find_element(
             By.XPATH, '//*[@id="header-navigation"]/div[4]/span'
