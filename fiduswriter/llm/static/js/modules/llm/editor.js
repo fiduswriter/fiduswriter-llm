@@ -150,10 +150,11 @@ export class EditorLLM {
             text: target.blocks.map(b => b.text).join("\n\n"),
             prompt: "",
             mode: "proposals",
-            onSubmit: (prompt, outputMode) => {
+            onSubmit: (prompt, outputMode, validationOptions) => {
                 this.improveText({
                     prompt,
                     outputMode,
+                    validationOptions,
                     view,
                     blocks: target.blocks
                 })
@@ -264,11 +265,18 @@ export class EditorLLM {
         return {node, text, placeholders}
     }
 
-    async improveText({prompt, outputMode, view, blocks}) {
-        const title =
+    async improveText({
+        prompt,
+        outputMode,
+        view,
+        blocks,
+        validationOptions = {}
+    }) {
+        const isCommentMode =
             outputMode === "comments" || outputMode === "global_comment"
-                ? gettext("Asking LLM for comments...")
-                : gettext("Sending text to LLM...")
+        const title = isCommentMode
+            ? gettext("Asking LLM for comments...")
+            : gettext("Sending text to LLM...")
         const abortController = new AbortController()
         const totalBlocks = blocks.length
         const progress = new ProgressTask("info", {
@@ -302,19 +310,18 @@ export class EditorLLM {
                             totalBlocks
                         ])
                     )
-                    const improvedText = await this.improveBlock({
+                    const {improvedText} = await this.processBlockWithRetries({
                         prompt,
                         outputMode,
                         view,
                         block,
-                        signal: abortController.signal
+                        signal: abortController.signal,
+                        validationOptions
                     })
                     results.push({block, improvedText})
                 }
                 proposalCount = this.createProposals({view, results})
             } else {
-                // Apply each block's result as soon as it arrives so the user
-                // sees progress, especially for comments.
                 const llmUser = this.getLLMUser()
                 const results = []
                 for (let i = 0; i < blocks.length; i++) {
@@ -326,13 +333,15 @@ export class EditorLLM {
                             totalBlocks
                         ])
                     )
-                    const improvedText = await this.improveBlock({
-                        prompt,
-                        outputMode,
-                        view,
-                        block,
-                        signal: abortController.signal
-                    })
+                    const {improvedText, isValid} =
+                        await this.processBlockWithRetries({
+                            prompt,
+                            outputMode,
+                            view,
+                            block,
+                            signal: abortController.signal,
+                            validationOptions
+                        })
                     if (outputMode === "comments") {
                         this.applyComments({
                             view,
@@ -341,22 +350,27 @@ export class EditorLLM {
                             llmUser
                         })
                     } else {
-                        // For direct/changes modes processing in document order
-                        // would invalidate later positions, so collect and apply
-                        // from last to first.
-                        results.push({block, improvedText})
+                        results.push({block, improvedText, isValid})
                     }
                 }
                 if (outputMode !== "comments") {
                     const sortedResults = results
                         .slice()
                         .sort((a, b) => b.block.from - a.block.from)
-                    for (const {block, improvedText} of sortedResults) {
+                    for (const {
+                        block,
+                        improvedText,
+                        isValid
+                    } of sortedResults) {
+                        const forceTracked = outputMode === "direct" && !isValid
+                        if (improvedText === block.text && !forceTracked) {
+                            continue
+                        }
                         this.applyImprovedBlock({
                             view,
                             block,
                             improvedText,
-                            asTracked: outputMode === "changes",
+                            asTracked: outputMode === "changes" || forceTracked,
                             llmUser
                         })
                     }
@@ -390,7 +404,14 @@ export class EditorLLM {
         }
     }
 
-    async improveBlock({prompt, outputMode, view, block, signal}) {
+    async improveBlock({
+        prompt,
+        outputMode,
+        view,
+        block,
+        signal,
+        translationExpected = false
+    }) {
         const blockTypeName =
             BLOCK_TYPE_LABELS[block.node.type.name] || gettext("text passage")
         const allBlocks = this.getAllTextBlocks(view)
@@ -418,8 +439,15 @@ export class EditorLLM {
             instructionText += `\n\n${gettext("The text contains placeholders such as")} ${example} ${gettext("representing non-text elements (citations, equations, cross-references). You MUST preserve these placeholders exactly and in the same order. Do not modify them. Only improve the surrounding text.")}`
         }
 
+        const translationLanguageMatch = prompt.match(/\bto\s+([A-Za-z]+)\b/)
+        const language = translationLanguageMatch
+            ? translationLanguageMatch[1]
+            : ""
+
         if (outputMode === "comments") {
             instructionText += `\n\n${gettext("Do not rewrite the text. Instead, briefly explain what could be improved about it. Respond with one or more short comments, one per line.")}`
+        } else if (translationExpected && language) {
+            instructionText += `\n\n${interpolate(gettext("Translate every sentence to %s. Do not improve or rewrite the text in the original language."), [language])}`
         }
 
         let finalInstruction
@@ -427,6 +455,19 @@ export class EditorLLM {
             finalInstruction = gettext(
                 "Return ONLY one or more short comments, one per line. Do not include these instructions, the context, or any explanations. Do not rewrite the text."
             )
+        } else if (translationExpected) {
+            if (language) {
+                finalInstruction = interpolate(
+                    gettext(
+                        "Return ONLY the %s translation of the text below. Do not return any part of it in the original language or any other language. Do not include these instructions, the context, or any explanations. Do not quote the text. Preserve all placeholders exactly."
+                    ),
+                    [language]
+                )
+            } else {
+                finalInstruction = gettext(
+                    "Return ONLY the translation of the text below in the language requested above. Do not return any part of it in the original language or any other language. Do not include these instructions, the context, or any explanations. Do not quote the text. Preserve all placeholders exactly."
+                )
+            }
         } else {
             finalInstruction = gettext(
                 "Return ONLY the improved version of the text below. If the text is already correct and needs no changes, return it exactly as provided. Do not include these instructions, the context, or any explanations in your response. Do not quote the text. Preserve all placeholders exactly."
@@ -449,6 +490,141 @@ export class EditorLLM {
         }
 
         return this.normalizePlaceholders(json.text)
+    }
+
+    async processBlockWithRetries({
+        prompt,
+        outputMode,
+        view,
+        block,
+        signal,
+        validationOptions
+    }) {
+        let improvedText = ""
+        let isValid = false
+        for (let attempt = 1; attempt <= 3; attempt++) {
+            improvedText = await this.improveBlock({
+                prompt,
+                outputMode,
+                view,
+                block,
+                signal,
+                translationExpected: validationOptions.translationCheckEnabled
+            })
+            isValid = this.isImprovedTextValid({
+                block,
+                improvedText,
+                outputMode,
+                validationOptions
+            })
+            if (isValid) {
+                break
+            }
+        }
+        return {improvedText, isValid}
+    }
+
+    isImprovedTextValid({block, improvedText, outputMode, validationOptions}) {
+        if (outputMode === "comments" || outputMode === "global_comment") {
+            return true
+        }
+
+        const inputCitations = this.countCitations(block.text)
+        const outputCitations = this.countCitations(improvedText)
+        if (inputCitations.size !== outputCitations.size) {
+            return false
+        }
+        for (const [index, count] of inputCitations) {
+            if (outputCitations.get(index) !== count) {
+                return false
+            }
+        }
+
+        if (
+            validationOptions.lengthCheckEnabled &&
+            this.isLengthConstrainedBlock(block)
+        ) {
+            const originalLength = block.text.length
+            if (originalLength === 0) {
+                if (improvedText.length > 0) {
+                    return false
+                }
+            } else {
+                const diffPercent =
+                    (Math.abs(improvedText.length - originalLength) /
+                        originalLength) *
+                    100
+                if (diffPercent > validationOptions.maxLengthDiffPercent) {
+                    return false
+                }
+            }
+        }
+
+        if (!validationOptions.acceptUnchanged && improvedText === block.text) {
+            return false
+        }
+
+        if (
+            validationOptions.translationCheckEnabled &&
+            improvedText === block.text
+        ) {
+            return false
+        }
+
+        if (
+            validationOptions.minWordDiffCheckEnabled &&
+            this.isLengthConstrainedBlock(block)
+        ) {
+            const diffPercent = this.computeWordDifferenceRatio(
+                block.text,
+                improvedText
+            )
+            if (diffPercent < validationOptions.minWordDiffPercent) {
+                return false
+            }
+        }
+
+        return true
+    }
+
+    computeWordDifferenceRatio(originalText, improvedText) {
+        const diffs = diffWordsWithSpace(originalText, improvedText)
+        let unchangedWords = 0
+        let inputWords = 0
+        diffs.forEach(diff => {
+            const words = diff.value.split(/\s+/).filter(word => word.length)
+            const count = words.length
+            if (!diff.added && !diff.removed) {
+                unchangedWords += count
+                inputWords += count
+            } else if (diff.removed) {
+                inputWords += count
+            }
+        })
+        if (inputWords === 0) {
+            return 100
+        }
+        return ((inputWords - unchangedWords) / inputWords) * 100
+    }
+
+    countCitations(text) {
+        const counts = new Map()
+        const pattern = /\[NODE:\s*citation\s*:\s*(\d+)\s*\]/gi
+        let match
+        while ((match = pattern.exec(text)) !== null) {
+            const index = Number.parseInt(match[1], 10)
+            counts.set(index, (counts.get(index) || 0) + 1)
+        }
+        return counts
+    }
+
+    isLengthConstrainedBlock(block) {
+        const typeName = block.node.type.name
+        return (
+            typeName === "paragraph" ||
+            typeName === "title" ||
+            typeName.startsWith("heading")
+        )
     }
 
     getAllTextBlocks(view) {

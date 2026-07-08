@@ -1,11 +1,14 @@
 import json
+import logging
 
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 from asgiref.sync import sync_to_async
-from httpx import AsyncClient
+from httpx import AsyncClient, RequestError, Timeout
+
+logger = logging.getLogger(__name__)
 
 LLM_URL = getattr(
     settings, "LLM_URL", "https://openrouter.ai/api/v1/chat/completions"
@@ -60,10 +63,10 @@ async def improve(request):
 
     system_message = (
         "You are a helpful writing assistant. "
-        "The user provides instructions followed by a TEXT TO IMPROVE section. "
-        "Return ONLY the improved version of the text from that section, "
-        "or the original text unchanged if it is already correct. "
-        "Do not include the instructions, context, or any explanations. "
+        "The user provides instructions followed by a TEXT TO IMPROVE "
+        "section. "
+        "Follow the user's instructions exactly. "
+        "Do not include these instructions, the context, or any explanations. "
         "Preserve all placeholders such as [NODE:type:index] exactly."
     )
     user_message = prompt
@@ -83,13 +86,32 @@ async def improve(request):
         **LLM_EXTRA_HEADERS,
     }
 
-    async with AsyncClient() as client:
-        response = await client.post(
-            config["url"],
-            json=payload,
-            headers=headers,
-            timeout=88,
+    timeout = Timeout(88.0, connect=10.0)
+    logger.warning(
+        "Sending LLM request to %s (model: %s)", config["url"], config["model"]
+    )
+
+    try:
+        async with AsyncClient() as client:
+            response = await client.post(
+                config["url"],
+                json=payload,
+                headers=headers,
+                timeout=timeout,
+            )
+    except RequestError as exc:
+        logger.exception(
+            "LLM request to %s failed: %s", config["url"], exc
         )
+        return JsonResponse(
+            {
+                "error": "Could not reach the LLM provider.",
+                "details": str(exc),
+            },
+            status=502,
+        )
+
+    logger.warning("LLM response status: %s", response.status_code)
 
     if response.status_code != 200:
         return JsonResponse(

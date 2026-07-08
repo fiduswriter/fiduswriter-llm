@@ -32,6 +32,7 @@ export class LLMDialog {
         })
         this.dialog.open()
         this.bind()
+        this.updateQualityChecksVisibility()
     }
 
     bind() {
@@ -45,6 +46,66 @@ export class LLMDialog {
                     break
             }
         })
+        const outputModeRadios = this.dialog.dialogEl.querySelectorAll(
+            'input[name="llm-output-mode"]'
+        )
+        outputModeRadios.forEach(radio => {
+            radio.addEventListener("change", () =>
+                this.updateQualityChecksVisibility()
+            )
+        })
+        const translationCheckEl = this.dialog.dialogEl.querySelector(
+            "#llm-translation-check"
+        )
+        translationCheckEl?.addEventListener("change", () =>
+            this.onTranslationCheckChanged()
+        )
+    }
+
+    onTranslationCheckChanged() {
+        const translationCheckEl = this.dialog.dialogEl.querySelector(
+            "#llm-translation-check"
+        )
+        const acceptUnchangedEl = this.dialog.dialogEl.querySelector(
+            "#llm-accept-unchanged"
+        )
+        const minWordDiffCheckEl = this.dialog.dialogEl.querySelector(
+            "#llm-min-word-diff-check"
+        )
+        const minWordDiffPercentEl = this.dialog.dialogEl.querySelector(
+            "#llm-min-word-diff-percent"
+        )
+        if (
+            !translationCheckEl ||
+            !acceptUnchangedEl ||
+            !minWordDiffCheckEl ||
+            !minWordDiffPercentEl
+        ) {
+            return
+        }
+        if (translationCheckEl.checked) {
+            acceptUnchangedEl.checked = false
+            if (!minWordDiffCheckEl.checked) {
+                minWordDiffCheckEl.checked = true
+                minWordDiffPercentEl.value = 70
+            }
+        }
+    }
+
+    updateQualityChecksVisibility() {
+        const outputMode =
+            this.dialog.dialogEl.querySelector(
+                'input[name="llm-output-mode"]:checked'
+            )?.value || "proposals"
+        const checksEl = this.dialog.dialogEl.querySelector(
+            ".llm-quality-checks"
+        )
+        if (!checksEl) {
+            return
+        }
+        const hideChecks =
+            outputMode === "comments" || outputMode === "global_comment"
+        checksEl.style.display = hideChecks ? "none" : ""
     }
 
     submit() {
@@ -57,7 +118,67 @@ export class LLMDialog {
             this.dialog.dialogEl.querySelector(
                 'input[name="llm-output-mode"]:checked'
             )?.value || "proposals"
+        const lengthCheckEl =
+            this.dialog.dialogEl.querySelector("#llm-length-check")
+        const lengthCheckEnabled = lengthCheckEl?.checked || false
+        const lengthPercentEl = this.dialog.dialogEl.querySelector(
+            "#llm-length-percent"
+        )
+        const maxLengthDiffPercent = lengthPercentEl
+            ? Number.parseFloat(lengthPercentEl.value)
+            : 25
+        if (
+            lengthCheckEnabled &&
+            (Number.isNaN(maxLengthDiffPercent) || maxLengthDiffPercent <= 0)
+        ) {
+            addAlert(
+                "error",
+                gettext(
+                    "Please enter a valid maximum length difference percentage."
+                )
+            )
+            return
+        }
+        const acceptUnchangedEl = this.dialog.dialogEl.querySelector(
+            "#llm-accept-unchanged"
+        )
+        const acceptUnchanged = acceptUnchangedEl?.checked !== false
+        const minWordDiffCheckEl = this.dialog.dialogEl.querySelector(
+            "#llm-min-word-diff-check"
+        )
+        const minWordDiffCheckEnabled = minWordDiffCheckEl?.checked || false
+        const minWordDiffPercentEl = this.dialog.dialogEl.querySelector(
+            "#llm-min-word-diff-percent"
+        )
+        const minWordDiffPercent = minWordDiffPercentEl
+            ? Number.parseFloat(minWordDiffPercentEl.value)
+            : 50
+        if (
+            minWordDiffCheckEnabled &&
+            (Number.isNaN(minWordDiffPercent) ||
+                minWordDiffPercent < 0 ||
+                minWordDiffPercent > 100)
+        ) {
+            addAlert(
+                "error",
+                gettext(
+                    "Please enter a valid minimum word difference percentage."
+                )
+            )
+            return
+        }
+        const translationCheckEl = this.dialog.dialogEl.querySelector(
+            "#llm-translation-check"
+        )
+        const translationCheckEnabled = translationCheckEl?.checked || false
         this.dialog.close()
-        this.options.onSubmit(prompt, outputMode)
+        this.options.onSubmit(prompt, outputMode, {
+            translationCheckEnabled,
+            lengthCheckEnabled,
+            maxLengthDiffPercent,
+            acceptUnchanged,
+            minWordDiffCheckEnabled,
+            minWordDiffPercent
+        })
     }
 }
