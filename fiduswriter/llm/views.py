@@ -7,7 +7,9 @@ from django.views.decorators.http import require_POST
 from asgiref.sync import sync_to_async
 from httpx import AsyncClient
 
-LLM_URL = getattr(settings, "LLM_URL", "https://openrouter.ai/api/v1/chat/completions")
+LLM_URL = getattr(
+    settings, "LLM_URL", "https://openrouter.ai/api/v1/chat/completions"
+)
 LLM_MODEL = getattr(settings, "LLM_MODEL", "meta-llama/llama-3.1-8b-instruct")
 LLM_API_KEY = getattr(settings, "LLM_API_KEY", "")
 LLM_EXTRA_HEADERS = getattr(settings, "LLM_EXTRA_HEADERS", {})
@@ -47,7 +49,6 @@ async def improve(request):
         data = json.loads(request.body)
     except json.JSONDecodeError:
         return JsonResponse({"error": "Invalid JSON."}, status=400)
-    text = data.get("text", "")
     prompt = data.get("prompt", "")
     user = await request.auser()
     config = get_effective_llm_config(get_user_llm_preferences(user))
@@ -162,9 +163,7 @@ async def models(request):
         )
 
     raw_models = response_json.get("data", [])
-    model_ids = [
-        entry.get("id") for entry in raw_models if entry.get("id")
-    ]
+    model_ids = [entry.get("id") for entry in raw_models if entry.get("id")]
     return JsonResponse({"models": model_ids})
 
 

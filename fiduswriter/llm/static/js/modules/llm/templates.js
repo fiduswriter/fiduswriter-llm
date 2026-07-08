@@ -51,7 +51,12 @@ export const dialogTemplate = ({text, prompt, mode = "proposals"}) =>
                 <br />
                 <label>
                     <input type="radio" name="llm-output-mode" value="comments" ${mode === "comments" ? "checked" : ""} />
-                    ${gettext("Add LLM suggestions as comments")}
+                    ${gettext("Add LLM suggestions as comments on the text")}
+                </label>
+                <br />
+                <label>
+                    <input type="radio" name="llm-output-mode" value="global_comment" ${mode === "global_comment" ? "checked" : ""} />
+                    ${gettext("Add a single comment on the entire document")}
                 </label>
             </td>
         </tr>

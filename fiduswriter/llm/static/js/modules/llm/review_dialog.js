@@ -1,4 +1,4 @@
-import {Dialog, findTarget, gettext} from "fwtoolkit"
+import {Dialog, gettext} from "fwtoolkit"
 
 import {reviewDialogTemplate} from "./templates"
 

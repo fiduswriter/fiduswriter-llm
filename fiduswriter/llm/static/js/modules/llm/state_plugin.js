@@ -5,7 +5,7 @@ import {LLMReviewDialog} from "./review_dialog"
 
 const key = new PluginKey("llm")
 
-export const setProposals = function (state, newProposals) {
+export const setProposals = (state, newProposals) => {
     const keyState = key.getState(state)
     let decos = keyState.decos
     let proposals = keyState.proposals.slice()
@@ -25,7 +25,7 @@ export const setProposals = function (state, newProposals) {
     return state.tr.setMeta(key, {decos, proposals})
 }
 
-export const removeProposal = function (state, proposalId) {
+export const removeProposal = (state, proposalId) => {
     const keyState = key.getState(state)
     let proposals = keyState.proposals
     let decos = keyState.decos
@@ -36,7 +36,9 @@ export const removeProposal = function (state, proposalId) {
     }
 
     proposals = proposals.filter(p => p.id !== proposalId)
-    const deco = decos.find(proposal.from, proposal.to).find(d => d.spec.id === proposalId)
+    const deco = decos
+        .find(proposal.from, proposal.to)
+        .find(d => d.spec.id === proposalId)
     if (deco) {
         decos = decos.remove([deco])
     }
@@ -44,7 +46,7 @@ export const removeProposal = function (state, proposalId) {
     return state.tr.setMeta(key, {decos, proposals})
 }
 
-export const removeAllProposals = function (state) {
+export const removeAllProposals = state => {
     const keyState = key.getState(state)
     if (keyState.proposals.length === 0) {
         return
@@ -52,13 +54,13 @@ export const removeAllProposals = function (state) {
     return state.tr.setMeta(key, {decos: DecorationSet.empty, proposals: []})
 }
 
-export const hasProposals = function (state) {
+export const hasProposals = state => {
     const keyState = key.getState(state)
     return keyState.proposals.length > 0
 }
 
-export const llmPlugin = function (options) {
-    return new Plugin({
+export const llmPlugin = options =>
+    new Plugin({
         key,
         state: {
             init() {
@@ -67,7 +69,7 @@ export const llmPlugin = function (options) {
                     proposals: []
                 }
             },
-            apply(tr, prev, _oldState, state) {
+            apply(tr, prev, _oldState, _state) {
                 const meta = tr.getMeta(key)
                 if (meta) {
                     return meta
@@ -131,4 +133,3 @@ export const llmPlugin = function (options) {
             }
         }
     })
-}

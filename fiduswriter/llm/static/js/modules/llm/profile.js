@@ -1,4 +1,4 @@
-import {addAlert, escapeText, post, postJson, gettext} from "fwtoolkit"
+import {addAlert, escapeText, gettext, post, postJson} from "fwtoolkit"
 
 import {profileTemplate} from "./templates"
 
@@ -21,7 +21,8 @@ export class LLMProfile {
         )
 
         const originalSave = this.profile.save.bind(this.profile)
-        this.profile.save = () => originalSave().then(() => this.saveLLMPreferences())
+        this.profile.save = () =>
+            originalSave().then(() => this.saveLLMPreferences())
 
         this.profile.postRenderHandlers.push(() => this.bind())
     }
@@ -58,7 +59,9 @@ export class LLMProfile {
         const statusEl = this.profile.dom.querySelector("#llm-model-status")
         const selectEl = this.profile.dom.querySelector("#llm-model")
         const modelManual = this.profile.dom.querySelector("#llm-model-manual")
-        const serverKey = Boolean(this.profile.app.settings.LLM_API_KEY_CONFIGURED)
+        const serverKey = Boolean(
+            this.profile.app.settings.LLM_API_KEY_CONFIGURED
+        )
 
         if (!url) {
             statusEl.textContent = gettext("Please enter an API URL.")
@@ -103,7 +106,9 @@ export class LLMProfile {
     saveLLMPreferences() {
         const url = this.getEffectiveUrl()
         const apiKey = this.profile.dom.querySelector("#llm-api-key").value
-        const model = this.profile.dom.querySelector("#llm-model-manual").value.trim()
+        const model = this.profile.dom
+            .querySelector("#llm-model-manual")
+            .value.trim()
 
         return post("/api/llm/preferences/", {
             url,

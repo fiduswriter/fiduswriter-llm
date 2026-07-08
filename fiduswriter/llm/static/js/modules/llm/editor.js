@@ -1,5 +1,5 @@
-import {addAlert, postJson, gettext, interpolate, ProgressTask} from "fwtoolkit"
 import {diffWordsWithSpace} from "diff"
+import {ProgressTask, addAlert, gettext, interpolate, postJson} from "fwtoolkit"
 
 import {LLMDialog} from "./dialog"
 import {
@@ -86,7 +86,8 @@ export class EditorLLM {
             title: gettext("LLM text improvement"),
             type: "menu",
             disabled: editor =>
-                editor.docInfo.access_rights !== "write" || editor.app.isOffline(),
+                editor.docInfo.access_rights !== "write" ||
+                editor.app.isOffline(),
             content: [
                 {
                     title: gettext("Improve entire text"),
@@ -123,7 +124,7 @@ export class EditorLLM {
             type: "button",
             title: gettext("Improve with LLM"),
             icon: "wand-magic-sparkles",
-            action: editor => {
+            action: _editor => {
                 this.openDialog({mode: "selection"})
                 return false
             },
@@ -172,7 +173,8 @@ export class EditorLLM {
     getLLMUser() {
         const settings = this.editor.app.settings
         const prefs = this.editor.user.preferences || {}
-        const model = prefs.llm_model || settings.LLM_MODEL || gettext("unknown model")
+        const model =
+            prefs.llm_model || settings.LLM_MODEL || gettext("unknown model")
         return {
             id: 0,
             username: `LLM (${model})`
@@ -182,10 +184,7 @@ export class EditorLLM {
     isLLMConfigured() {
         const settings = this.editor.app.settings
         const prefs = this.editor.user.preferences || {}
-        return Boolean(
-            settings.LLM_API_KEY_CONFIGURED ||
-                prefs.llm_api_key
-        )
+        return Boolean(settings.LLM_API_KEY_CONFIGURED || prefs.llm_api_key)
     }
 
     getTarget(mode, view) {
@@ -247,9 +246,17 @@ export class EditorLLM {
         node.forEach(child => {
             if (child.isText) {
                 text += child.text
-            } else if (child.isInline && PLACEHOLDER_TYPES.includes(child.type.name)) {
+            } else if (
+                child.isInline &&
+                PLACEHOLDER_TYPES.includes(child.type.name)
+            ) {
                 const id = `[NODE:${child.type.name}:${index}]`
-                placeholders.push({id, type: child.type.name, index, node: child})
+                placeholders.push({
+                    id,
+                    type: child.type.name,
+                    index,
+                    node: child
+                })
                 text += id
                 index++
             }
@@ -259,7 +266,7 @@ export class EditorLLM {
 
     async improveText({prompt, outputMode, view, blocks}) {
         const title =
-            outputMode === "comments"
+            outputMode === "comments" || outputMode === "global_comment"
                 ? gettext("Asking LLM for comments...")
                 : gettext("Sending text to LLM...")
         const abortController = new AbortController()
@@ -274,6 +281,15 @@ export class EditorLLM {
         progress.open()
 
         try {
+            if (outputMode === "global_comment") {
+                await this.improveAsGlobalComment({
+                    prompt,
+                    view,
+                    signal: abortController.signal,
+                    progress
+                })
+                return
+            }
             let proposalCount = 0
             if (outputMode === "proposals") {
                 const results = []
@@ -355,10 +371,10 @@ export class EditorLLM {
                     ? gettext("LLM comments added.")
                     : outputMode === "proposals"
                       ? proposalCount
-                            ? gettext(
-                                  "LLM proposals created. Right-click a highlighted passage to review."
-                              )
-                            : gettext("No LLM change proposals were necessary.")
+                          ? gettext(
+                                "LLM proposals created. Right-click a highlighted passage to review."
+                            )
+                          : gettext("No LLM change proposals were necessary.")
                       : gettext("LLM improvement applied.")
             addAlert("info", doneMessage)
         } catch (error) {
@@ -375,7 +391,8 @@ export class EditorLLM {
     }
 
     async improveBlock({prompt, outputMode, view, block, signal}) {
-        const blockTypeName = BLOCK_TYPE_LABELS[block.node.type.name] || gettext("text passage")
+        const blockTypeName =
+            BLOCK_TYPE_LABELS[block.node.type.name] || gettext("text passage")
         const allBlocks = this.getAllTextBlocks(view)
         const context = this.getBlockContext(allBlocks, block)
 
@@ -421,7 +438,6 @@ export class EditorLLM {
         const {json, status} = await postJson(
             "/api/llm/improve/",
             {
-                text: block.text,
                 prompt: fullPrompt
             },
             {},
@@ -490,7 +506,10 @@ export class EditorLLM {
                 }
                 offset += len
                 pos += len
-            } else if (child.isInline && PLACEHOLDER_TYPES.includes(child.type.name)) {
+            } else if (
+                child.isInline &&
+                PLACEHOLDER_TYPES.includes(child.type.name)
+            ) {
                 const placeholder = block.placeholders[placeholderIndex]
                 const idLen = placeholder ? placeholder.id.length : 0
                 if (offset + idLen >= textOffset) {
@@ -560,7 +579,10 @@ export class EditorLLM {
             if (improvedText === block.text) {
                 return
             }
-            const changeRange = this.computeChangeRange(block.text, improvedText)
+            const changeRange = this.computeChangeRange(
+                block.text,
+                improvedText
+            )
             if (changeRange.from >= changeRange.to) {
                 return
             }
@@ -595,7 +617,13 @@ export class EditorLLM {
         }
     }
 
-    applyImprovedBlock({view, block, improvedText, asTracked = false, llmUser}) {
+    applyImprovedBlock({
+        view,
+        block,
+        improvedText,
+        asTracked = false,
+        llmUser
+    }) {
         const schema = view.state.schema
         const user = llmUser || this.getLLMUser()
         const date = Date.now() - this.editor.clientTimeAdjustment
@@ -643,7 +671,10 @@ export class EditorLLM {
         })
 
         const tr = view.state.tr
-            .replaceWith(block.from + 1, block.to - 1, [...oldNodes, ...newNodes])
+            .replaceWith(block.from + 1, block.to - 1, [
+                ...oldNodes,
+                ...newNodes
+            ])
             .setMeta("llm", true)
         view.dispatch(tr)
         view.focus()
@@ -672,10 +703,122 @@ export class EditorLLM {
                 user: user.id,
                 username: user.username,
                 date,
-                comment: [{type: "paragraph", content: [{type: "text", text: commentText}]}],
+                comment: [
+                    {
+                        type: "paragraph",
+                        content: [{type: "text", text: commentText}]
+                    }
+                ],
                 isMajor: false
             }
             store.addComment(commentData, block.from + 1, block.to - 1, view)
+        })
+    }
+
+    getFullDocumentText(view) {
+        const sections = []
+
+        const mainBlocks = this.getFullText(view)?.blocks || []
+        if (mainBlocks.length) {
+            sections.push(
+                `${gettext("DOCUMENT:")}\n${mainBlocks.map(block => block.text).join("\n\n")}`
+            )
+        }
+
+        const fnView = this.editor.mod.footnotes?.fnEditor?.view
+        if (fnView) {
+            const fnBlocks = this.getFullText(fnView)?.blocks || []
+            if (fnBlocks.length) {
+                sections.push(
+                    `${gettext("FOOTNOTES:")}\n${fnBlocks.map(block => block.text).join("\n\n")}`
+                )
+            }
+        }
+
+        const bibliographyEl = document.querySelector(".doc-bibliography")
+        if (bibliographyEl?.textContent.trim()) {
+            sections.push(
+                `${gettext("BIBLIOGRAPHY:")}\n${bibliographyEl.textContent.trim()}`
+            )
+        }
+
+        return sections.join("\n\n")
+    }
+
+    async improveAsGlobalComment({prompt, view, signal, progress}) {
+        progress.update(10, gettext("Reading document..."))
+        const documentText = this.getFullDocumentText(view)
+
+        progress.update(30, gettext("Sending document to LLM..."))
+        const commentText = await this.improveDocument({
+            prompt,
+            documentText,
+            signal
+        })
+
+        progress.update(80, gettext("Adding comment..."))
+        if (commentText) {
+            this.applyGlobalComment({commentText})
+        }
+
+        progress.update(100, gettext("Done"))
+        progress.close()
+        addAlert("info", gettext("LLM document comment added."))
+    }
+
+    async improveDocument({prompt, documentText, signal}) {
+        const instructionText = `${prompt}\n\n${gettext("You are reviewing an entire document. Provide a comment about the document as a whole.")}`
+
+        const finalInstruction = gettext(
+            "Return ONLY your comment about the entire document. Do not include these instructions, the context, or any explanations. Do not rewrite the text."
+        )
+
+        const fullPrompt = `${instructionText}\n\n---\n\n${finalInstruction}\n\n${gettext("DOCUMENT TO REVIEW:")}\n${documentText}`
+
+        const {json, status} = await postJson(
+            "/api/llm/improve/",
+            {
+                prompt: fullPrompt
+            },
+            {},
+            {signal}
+        )
+
+        if (status !== 200) {
+            throw new Error(json.error || gettext("LLM request failed."))
+        }
+
+        return this.normalizePlaceholders(json.text).trim()
+    }
+
+    applyGlobalComment({commentText}) {
+        const store = this.editor.mod?.comments?.store
+        if (!store) {
+            throw new Error(gettext("Comments are not available."))
+        }
+
+        const paragraphs = commentText
+            .split("\n")
+            .map(line => line.trim())
+            .filter(line => line.length)
+            .map(line => ({
+                type: "paragraph",
+                content: [{type: "text", text: line}]
+            }))
+
+        if (!paragraphs.length) {
+            return
+        }
+
+        const user = this.getLLMUser()
+        const date = Date.now() - this.editor.clientTimeAdjustment
+
+        store.addGlobalComment({
+            user: user.id,
+            username: user.username,
+            date,
+            comment: paragraphs,
+            isMajor: false
         })
     }
 
@@ -696,7 +839,11 @@ export class EditorLLM {
             if (before.length) {
                 parts.push({kind: "text", value: before})
             }
-            parts.push({kind: "placeholder", type, index: Number.parseInt(indexStr, 10)})
+            parts.push({
+                kind: "placeholder",
+                type,
+                index: Number.parseInt(indexStr, 10)
+            })
             lastIndex = match.index + fullMatch.length
         }
         if (lastIndex < text.length) {
