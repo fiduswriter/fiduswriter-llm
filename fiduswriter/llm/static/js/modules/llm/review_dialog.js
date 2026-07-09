@@ -12,8 +12,8 @@ export class LLMReviewDialog {
 
     init() {
         this.dialog = new Dialog({
-            width: 500,
-            height: 480,
+            width: 680,
+            height: 600,
             title: gettext("Review LLM proposal"),
             body: reviewDialogTemplate({
                 original: this.proposal.originalText,
@@ -45,12 +45,10 @@ export class LLMReviewDialog {
     }
 
     applyDirect() {
-        this.editorLlm.applyImprovedBlock({
+        this.editorLlm.applyProposalSection({
             view: this.view,
-            block: this.proposal.block,
-            improvedText: this.proposal.improvedText,
-            asTracked: false,
-            llmUser: this.proposal.llmUser
+            proposal: this.proposal,
+            asTracked: false
         })
         this.editorLlm.removeProposal(this.view, this.proposal.id)
         this.dialog.close()
@@ -58,12 +56,10 @@ export class LLMReviewDialog {
     }
 
     applyTracked() {
-        this.editorLlm.applyImprovedBlock({
+        this.editorLlm.applyProposalSection({
             view: this.view,
-            block: this.proposal.block,
-            improvedText: this.proposal.improvedText,
-            asTracked: true,
-            llmUser: this.proposal.llmUser
+            proposal: this.proposal,
+            asTracked: true
         })
         this.editorLlm.removeProposal(this.view, this.proposal.id)
         this.dialog.close()

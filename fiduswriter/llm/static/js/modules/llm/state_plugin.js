@@ -87,9 +87,16 @@ export const llmPlugin = options =>
                 proposals = proposals.map(proposal => {
                     const mappedFrom = tr.mapping.map(proposal.from, -1)
                     const mappedTo = tr.mapping.map(proposal.to, 1)
+                    const mappedApplyFrom = tr.mapping.map(
+                        proposal.applyFrom,
+                        -1
+                    )
+                    const mappedApplyTo = tr.mapping.map(proposal.applyTo, 1)
                     return Object.assign({}, proposal, {
                         from: mappedFrom,
-                        to: mappedTo
+                        to: mappedTo,
+                        applyFrom: mappedApplyFrom,
+                        applyTo: mappedApplyTo
                     })
                 })
 

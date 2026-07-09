@@ -11,8 +11,8 @@ export class LLMDialog {
 
     init() {
         this.dialog = new Dialog({
-            width: 500,
-            height: 580,
+            width: 680,
+            height: 600,
             title: gettext("Improve text with LLM"),
             body: dialogTemplate({
                 text: this.options.text || "",

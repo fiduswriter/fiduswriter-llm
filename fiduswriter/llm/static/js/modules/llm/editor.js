@@ -1,4 +1,5 @@
 import {diffWordsWithSpace} from "diff"
+import {AddMarkStep} from "prosemirror-transform"
 import {ProgressTask, addAlert, gettext, interpolate, postJson} from "fwtoolkit"
 
 import {LLMDialog} from "./dialog"
@@ -55,6 +56,7 @@ export class EditorLLM {
     constructor(editor) {
         this.editor = editor
         this.currentAbortController = null
+        this.highlightLLMAdditions = false
     }
 
     init() {
@@ -72,8 +74,28 @@ export class EditorLLM {
                 border-bottom: 2px wavy #f57f17;
                 cursor: pointer;
             }
+            .llm-highlight-additions span.insertion[data-user="-1"],
+            .llm-highlight-additions span.approved-insertion[data-user="-1"] {
+                background-color: rgba(144, 238, 144, 0.4);
+            }
         `
         document.head.appendChild(styleEl)
+    }
+
+    toggleHighlightLLMAdditions() {
+        this.highlightLLMAdditions = !this.highlightLLMAdditions
+        this.updateHighlightClass()
+    }
+
+    updateHighlightClass() {
+        const editorEl = this.editor.dom?.querySelector("#editor")
+        if (!editorEl) {
+            return
+        }
+        editorEl.classList.toggle(
+            "llm-highlight-additions",
+            this.highlightLLMAdditions
+        )
     }
 
     addStatePlugin() {
@@ -118,6 +140,18 @@ export class EditorLLM {
                     action: _editor => {
                         this.clearProposals()
                     },
+                    disabled: editor => editor.app.isOffline()
+                },
+                {
+                    title: gettext("Highlight LLM additions"),
+                    type: "setting",
+                    tooltip: gettext(
+                        "Highlight text that has been added by the LLM."
+                    ),
+                    action: _editor => {
+                        this.toggleHighlightLLMAdditions()
+                    },
+                    selected: _editor => this.highlightLLMAdditions,
                     disabled: editor => editor.app.isOffline()
                 }
             ]
@@ -208,7 +242,7 @@ export class EditorLLM {
         const model =
             prefs.llm_model || settings.LLM_MODEL || gettext("unknown model")
         return {
-            id: 0,
+            id: -1,
             username: `LLM (${model})`
         }
     }
@@ -942,49 +976,106 @@ export class EditorLLM {
         return found !== null ? found : block.to - 1
     }
 
-    computeChangeRange(originalText, improvedText) {
+    computeChangeSections(originalText, improvedText) {
         const diffs = diffWordsWithSpace(originalText, improvedText)
-        let firstChange = -1
-        let lastChange = -1
+        const sections = []
         let originalOffset = 0
+        let improvedOffset = 0
+        let currentSection = null
 
-        for (let i = 0; i < diffs.length; i++) {
-            const diff = diffs[i]
-            const prevDiff = i > 0 ? diffs[i - 1] : null
+        const finalizeSection = () => {
+            if (!currentSection) {
+                return
+            }
+            const hasRemoved = currentSection.removedLength > 0
+            const hasAdded = currentSection.addedLength > 0
+
+            const applyOriginalFrom = currentSection.originalFrom
+            const applyOriginalTo = currentSection.originalTo
+            let displayOriginalFrom = applyOriginalFrom
+            let displayOriginalTo = applyOriginalTo
+            if (!hasRemoved && hasAdded) {
+                // Pure insertion: expand the zero-width original range by one
+                // adjacent character so the decoration is visible/clickable.
+                if (displayOriginalFrom > 0) {
+                    displayOriginalFrom -= 1
+                } else if (displayOriginalTo < originalText.length) {
+                    displayOriginalTo += 1
+                }
+            }
+
+            let displayOriginalText = originalText.slice(
+                displayOriginalFrom,
+                displayOriginalTo
+            )
+            let improvedSectionText = improvedText.slice(
+                currentSection.improvedFrom,
+                currentSection.improvedTo
+            )
+
+            if (!hasRemoved && hasAdded) {
+                // For a pure insertion, the original preview is just the
+                // expanded adjacent character.
+                displayOriginalText = originalText.slice(
+                    displayOriginalFrom,
+                    displayOriginalTo
+                )
+            } else if (hasRemoved && !hasAdded) {
+                // For a pure deletion, the improved preview is empty.
+                improvedSectionText = ""
+            }
+
+            sections.push({
+                applyOriginalFrom,
+                applyOriginalTo,
+                displayOriginalFrom,
+                displayOriginalTo,
+                improvedFrom: currentSection.improvedFrom,
+                improvedTo: currentSection.improvedTo,
+                originalText: displayOriginalText,
+                improvedText: improvedSectionText
+            })
+            currentSection = null
+        }
+
+        diffs.forEach(diff => {
             if (diff.added) {
-                if (!prevDiff || !prevDiff.removed) {
-                    // Pure insertion: it has no corresponding original text.
-                    if (firstChange < 0) {
-                        firstChange = originalOffset
+                if (!currentSection) {
+                    currentSection = {
+                        originalFrom: originalOffset,
+                        originalTo: originalOffset,
+                        improvedFrom: improvedOffset,
+                        improvedTo: improvedOffset,
+                        removedLength: 0,
+                        addedLength: 0
                     }
-                    lastChange = originalOffset
                 }
+                currentSection.improvedTo += diff.value.length
+                currentSection.addedLength += diff.value.length
+                improvedOffset += diff.value.length
             } else if (diff.removed) {
-                if (firstChange < 0) {
-                    firstChange = originalOffset
+                if (!currentSection) {
+                    currentSection = {
+                        originalFrom: originalOffset,
+                        originalTo: originalOffset,
+                        improvedFrom: improvedOffset,
+                        improvedTo: improvedOffset,
+                        removedLength: 0,
+                        addedLength: 0
+                    }
                 }
-                lastChange = originalOffset + diff.value.length
+                currentSection.originalTo += diff.value.length
+                currentSection.removedLength += diff.value.length
                 originalOffset += diff.value.length
             } else {
+                finalizeSection()
                 originalOffset += diff.value.length
+                improvedOffset += diff.value.length
             }
-        }
+        })
+        finalizeSection()
 
-        if (firstChange < 0) {
-            return {from: 0, to: 0}
-        }
-
-        // A zero-width inline decoration would be invisible and unclickable.
-        // Expand a pure insertion by one adjacent character if possible.
-        if (firstChange === lastChange) {
-            if (firstChange > 0) {
-                firstChange -= 1
-            } else if (lastChange < originalText.length) {
-                lastChange += 1
-            }
-        }
-
-        return {from: firstChange, to: lastChange}
+        return sections
     }
 
     createProposals({view, results}) {
@@ -998,23 +1089,46 @@ export class EditorLLM {
             if (improvedPlainText === block.plainText) {
                 return
             }
-            const changeRange = this.computeChangeRange(
+            const sections = this.computeChangeSections(
                 block.plainText,
                 improvedPlainText
             )
-            if (changeRange.from >= changeRange.to) {
-                return
-            }
-            proposalIdCounter += 1
-            proposals.push({
-                id: proposalIdCounter,
-                from: this.docPosFromTextOffset(block, changeRange.from),
-                to: this.docPosFromTextOffset(block, changeRange.to),
-                originalText: block.text,
-                improvedText,
-                block,
-                llmUser,
-                username: llmUser.username
+            sections.forEach(section => {
+                if (
+                    section.applyOriginalFrom >= section.applyOriginalTo &&
+                    section.improvedFrom >= section.improvedTo
+                ) {
+                    return
+                }
+                proposalIdCounter += 1
+                proposals.push({
+                    id: proposalIdCounter,
+                    from: this.docPosFromTextOffset(
+                        block,
+                        section.displayOriginalFrom
+                    ),
+                    to: this.docPosFromTextOffset(
+                        block,
+                        section.displayOriginalTo
+                    ),
+                    applyFrom: this.docPosFromTextOffset(
+                        block,
+                        section.applyOriginalFrom
+                    ),
+                    applyTo: this.docPosFromTextOffset(
+                        block,
+                        section.applyOriginalTo
+                    ),
+                    originalText: section.originalText,
+                    improvedText: section.improvedText,
+                    improvedFrom: section.improvedFrom,
+                    improvedTo: section.improvedTo,
+                    fullOriginalText: block.text,
+                    fullImprovedText: improvedText,
+                    block,
+                    llmUser,
+                    username: llmUser.username
+                })
             })
         })
 
@@ -1055,12 +1169,27 @@ export class EditorLLM {
             schema
         )
 
+        const originalRuns = this.flattenOriginalBlock(block)
+        const improvedRuns = this.flattenParsedTree(parsedTree)
+        const originalPlainText = block.plainText
+        const improvedPlainText = this.extractPlainTextFromRuns(improvedRuns)
+
         if (!asTracked) {
-            const newNodes = this.buildNodesFromParsedTree(
-                parsedTree,
+            const insertionMark = schema.marks.insertion.create({
+                user: user.id,
+                username: user.username,
+                date,
+                approved: true
+            })
+            const newNodes = this.buildDirectDiffNodes({
+                originalRuns,
+                improvedRuns,
+                originalPlainText,
+                improvedPlainText,
+                insertionMark,
                 schema,
                 footnoteImprovements
-            )
+            })
             const tr = view.state.tr
                 .replaceWith(block.from + 1, block.to - 1, newNodes)
                 .setMeta("llm", true)
@@ -1081,11 +1210,6 @@ export class EditorLLM {
             date
         })
 
-        const originalRuns = this.flattenOriginalBlock(block)
-        const improvedRuns = this.flattenParsedTree(parsedTree)
-        const originalPlainText = block.plainText
-        const improvedPlainText = this.extractPlainTextFromRuns(improvedRuns)
-
         const newNodes = this.buildTrackedDiffNodes({
             originalRuns,
             improvedRuns,
@@ -1100,6 +1224,117 @@ export class EditorLLM {
         const tr = view.state.tr
             .replaceWith(block.from + 1, block.to - 1, newNodes)
             .setMeta("llm", true)
+        view.dispatch(tr)
+        view.focus()
+    }
+
+    applyProposalSection({view, proposal, asTracked = false}) {
+        const schema = view.state.schema
+        const user = proposal.llmUser || this.getLLMUser()
+        const date = Date.now() - this.editor.clientTimeAdjustment
+        const block = proposal.block
+
+        const parsedTree = this.parseImprovedText(
+            proposal.fullImprovedText,
+            block.placeholders,
+            block.markRegistry,
+            schema
+        )
+        const improvedRuns = this.flattenParsedTree(parsedTree)
+
+        const hasImproved = proposal.improvedFrom < proposal.improvedTo
+        const hasOriginal = proposal.applyFrom < proposal.applyTo
+
+        if (!hasImproved) {
+            // Pure deletion.
+            if (asTracked && hasOriginal) {
+                const deletionMark = schema.marks.deletion.create({
+                    user: user.id,
+                    username: user.username,
+                    date
+                })
+                const tr = view.state.tr
+                    .step(
+                        new AddMarkStep(
+                            proposal.applyFrom,
+                            proposal.applyTo,
+                            deletionMark
+                        )
+                    )
+                    .setMeta("llm", true)
+                view.dispatch(tr)
+            } else if (hasOriginal) {
+                const tr = view.state.tr
+                    .delete(proposal.applyFrom, proposal.applyTo)
+                    .setMeta("llm", true)
+                view.dispatch(tr)
+            }
+            view.focus()
+            return
+        }
+
+        const sectionNodes = this.sliceImprovedRuns(
+            improvedRuns,
+            proposal.improvedFrom,
+            proposal.improvedTo,
+            schema,
+            new Map()
+        )
+
+        if (!asTracked) {
+            const insertionMark = schema.marks.insertion.create({
+                user: user.id,
+                username: user.username,
+                date,
+                approved: true
+            })
+            const markedNodes = sectionNodes.map(node => {
+                if (node.isText) {
+                    return schema.text(
+                        node.text,
+                        node.marks.concat(insertionMark)
+                    )
+                }
+                return node.mark(node.marks.concat(insertionMark))
+            })
+            const tr = view.state.tr
+                .replaceWith(proposal.applyFrom, proposal.applyTo, markedNodes)
+                .setMeta("llm", true)
+            view.dispatch(tr)
+            view.focus()
+            return
+        }
+
+        // Tracked mode: mark original range as deletion and insert the new
+        // text as an unapproved insertion after it.
+        const tr = view.state.tr.setMeta("llm", true)
+        if (hasOriginal) {
+            const deletionMark = schema.marks.deletion.create({
+                user: user.id,
+                username: user.username,
+                date
+            })
+            tr.step(
+                new AddMarkStep(
+                    proposal.applyFrom,
+                    proposal.applyTo,
+                    deletionMark
+                )
+            )
+        }
+        const insertionMark = schema.marks.insertion.create({
+            user: user.id,
+            username: user.username,
+            date,
+            approved: false
+        })
+        const markedNodes = sectionNodes.map(node => {
+            if (node.isText) {
+                return schema.text(node.text, node.marks.concat(insertionMark))
+            }
+            return node.mark(node.marks.concat(insertionMark))
+        })
+        tr.insert(proposal.applyTo, markedNodes)
         view.dispatch(tr)
         view.focus()
     }
@@ -1482,6 +1717,64 @@ export class EditorLLM {
                         )
                     }
                 })
+                sourceOffset += diff.value.length
+            } else {
+                const unchangedNodes = this.sliceOriginalRuns(
+                    originalRuns,
+                    sourceOffset,
+                    sourceOffset + diff.value.length,
+                    schema,
+                    footnoteImprovements
+                )
+                nodes.push(...unchangedNodes)
+                sourceOffset += diff.value.length
+                improvedOffset += diff.value.length
+            }
+        }
+
+        return nodes
+    }
+
+    buildDirectDiffNodes({
+        originalRuns,
+        improvedRuns,
+        originalPlainText,
+        improvedPlainText,
+        insertionMark,
+        schema,
+        footnoteImprovements = new Map()
+    }) {
+        const diffs = diffWordsWithSpace(originalPlainText, improvedPlainText)
+        const nodes = []
+        let sourceOffset = 0
+        let improvedOffset = 0
+
+        for (const diff of diffs) {
+            if (diff.added) {
+                const addedNodes = this.sliceImprovedRuns(
+                    improvedRuns,
+                    improvedOffset,
+                    improvedOffset + diff.value.length,
+                    schema,
+                    footnoteImprovements
+                )
+                addedNodes.forEach(node => {
+                    if (node.isText) {
+                        nodes.push(
+                            schema.text(
+                                node.text,
+                                node.marks.concat(insertionMark)
+                            )
+                        )
+                    } else {
+                        nodes.push(
+                            node.mark(node.marks.concat(insertionMark))
+                        )
+                    }
+                })
+                improvedOffset += diff.value.length
+            } else if (diff.removed) {
+                // In direct mode, removed text is simply omitted.
                 sourceOffset += diff.value.length
             } else {
                 const unchangedNodes = this.sliceOriginalRuns(
