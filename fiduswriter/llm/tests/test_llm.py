@@ -462,3 +462,63 @@ class LLMSeleniumTest(ChannelsLiveServerTestCase, SeleniumHelper):
             )
         )
         self.assertIn(LLM_GLOBAL_COMMENT, comment.text)
+
+    def test_llm_preferences_page(self):
+        # Create a user without any LLM configuration so the menu is hidden.
+        user = self.create_user(
+            username="NoLLM", email="nollm@snowman.com", passtext="otter1"
+        )
+        self.login_user(user, self.driver, self.client)
+
+        # Open the user profile page.
+        self.driver.get(self.base_url + "/")
+        self.driver.find_element(By.ID, "preferences-btn").click()
+        self.driver.find_element(By.CSS_SELECTOR, ".fw-avatar-card").click()
+
+        # Wait for the LLM settings panel injected by the plugin to render.
+        WebDriverWait(self.driver, self.wait_time).until(
+            EC.presence_of_element_located((By.ID, "llm-url"))
+        )
+
+        url = f"http://localhost:{self.server_port}/v1/chat/completions"
+        self.driver.find_element(By.ID, "llm-url").clear()
+        self.driver.find_element(By.ID, "llm-url").send_keys(url)
+        self.driver.find_element(By.ID, "llm-api-key").clear()
+        self.driver.find_element(By.ID, "llm-api-key").send_keys("test-user-key")
+        self.driver.find_element(By.ID, "llm-model-manual").clear()
+        self.driver.find_element(By.ID, "llm-model-manual").send_keys(
+            "mock-model"
+        )
+
+        self.driver.find_element(By.ID, "submit-profile").click()
+
+        # Wait for the save indicator to disappear.
+        WebDriverWait(self.driver, self.wait_time).until(
+            EC.invisibility_of_element_located(
+                (By.CSS_SELECTOR, "#fw-wait.fw-active")
+            )
+        )
+
+        # Verify the saved preferences make the LLM menu available.
+        self.driver.get(self.base_url + "/")
+        self.click_new_document_button(self.driver)
+        WebDriverWait(self.driver, self.wait_time).until(
+            EC.presence_of_element_located((By.CSS_SELECTOR, ".doc-body"))
+        )
+        body = self.driver.find_element(By.CSS_SELECTOR, ".doc-body")
+        body.click()
+        body.send_keys("Thes text has some erors.")
+
+        self.driver.find_element(
+            By.XPATH, '//*[@id="header-navigation"]/div[4]/span'
+        ).click()
+        self.driver.find_element(
+            By.XPATH, '//*[normalize-space()="LLM text improvement"]'
+        ).click()
+        self.driver.find_element(
+            By.XPATH, '//*[normalize-space()="Improve entire text"]'
+        ).click()
+
+        WebDriverWait(self.driver, self.wait_time).until(
+            EC.presence_of_element_located((By.ID, "llm-prompt"))
+        )
