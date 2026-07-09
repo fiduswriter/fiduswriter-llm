@@ -174,6 +174,15 @@ export class EditorLLM {
     }
 
     setProcessing(view, processing) {
+        if (processing) {
+            if (this.originalEditable === undefined) {
+                this.originalEditable = view.props.editable
+            }
+            view.setProps({editable: () => false})
+        } else {
+            view.setProps({editable: this.originalEditable})
+            this.originalEditable = undefined
+        }
         const tr = setProcessing(view.state, processing)
         if (tr) {
             view.dispatch(tr)
