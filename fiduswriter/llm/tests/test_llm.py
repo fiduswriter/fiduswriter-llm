@@ -10,6 +10,7 @@ from django.test import TestCase
 from django.urls import reverse
 from testing.live_server import ChannelsLiveServerTestCase
 from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.common.exceptions import StaleElementReferenceException
@@ -363,6 +364,57 @@ class LLMSeleniumTest(ChannelsLiveServerTestCase, SeleniumHelper):
             EC.presence_of_element_located((By.ID, "llm-prompt"))
         )
 
+    def open_llm_dialog_with_rich_text(self):
+        """Create a document with bold/italic text and a footnote, then open the LLM dialog."""
+        self.login_user(self.user, self.driver, self.client)
+        self.driver.get(self.base_url + "/")
+        self.click_new_document_button(self.driver)
+        WebDriverWait(self.driver, self.wait_time).until(
+            EC.presence_of_element_located((By.CSS_SELECTOR, ".doc-body"))
+        )
+        body = self.driver.find_element(By.CSS_SELECTOR, ".doc-body")
+        body.click()
+        # Type text with inline formatting. The word "erors" will be fixed to
+        # "errors" by the mock LLM.
+        body.send_keys("Thes ")
+        body.send_keys(Keys.CONTROL, "b")
+        body.send_keys("text")
+        body.send_keys(Keys.CONTROL, "b")
+        body.send_keys(" has ")
+        body.send_keys(Keys.CONTROL, "i")
+        body.send_keys("erors")
+        body.send_keys(Keys.CONTROL, "i")
+        body.send_keys(". ")
+
+        # Add a footnote at the end of the paragraph.
+        body.click()
+        body.send_keys(Keys.END)
+        self.driver.find_element(By.XPATH, '//*[@title="Footnote"]').click()
+        WebDriverWait(self.driver, self.wait_time).until(
+            EC.presence_of_element_located((By.CLASS_NAME, "footnote-container"))
+        )
+        footnote_editor = self.driver.find_element(
+            By.CSS_SELECTOR, "#footnote-box-container .ProseMirror"
+        )
+        footnote_editor.click()
+        footnote_editor.send_keys("footnote erors")
+        body.click()
+
+        # Open the Tools menu and start the LLM improvement flow.
+        self.driver.find_element(
+            By.XPATH, '//*[@id="header-navigation"]/div[4]/span'
+        ).click()
+        self.driver.find_element(
+            By.XPATH, '//*[normalize-space()="LLM text improvement"]'
+        ).click()
+        self.driver.find_element(
+            By.XPATH, '//*[normalize-space()="Improve entire text"]'
+        ).click()
+
+        WebDriverWait(self.driver, self.wait_time).until(
+            EC.presence_of_element_located((By.ID, "llm-prompt"))
+        )
+
     def run_llm(self, output_mode, _expected_alert):
         if output_mode != "proposals":
             self.driver.find_element(
@@ -409,13 +461,29 @@ class LLMSeleniumTest(ChannelsLiveServerTestCase, SeleniumHelper):
         )
 
     def test_llm_direct_application(self):
-        self.open_llm_dialog()
+        self.open_llm_dialog_with_rich_text()
         self.run_llm("direct", "LLM improvement applied.")
         WebDriverWait(self.driver, self.wait_time).until(
             EC.text_to_be_present_in_element(
                 (By.CSS_SELECTOR, ".doc-body"), LLM_IMPROVED_SUFFIX.strip()
             )
         )
+
+        # Verify that bold and italic marks were preserved by the LLM pipeline.
+        strong_text = self.driver.find_element(
+            By.CSS_SELECTOR, ".doc-body strong"
+        ).text
+        self.assertEqual(strong_text, "text")
+        em_text = self.driver.find_element(
+            By.CSS_SELECTOR, ".doc-body em"
+        ).text
+        self.assertEqual(em_text, "errors")
+
+        # Verify that the footnote content was also improved.
+        footnote_text = self.driver.find_element(
+            By.CSS_SELECTOR, ".footnote-container p"
+        ).text
+        self.assertIn(LLM_IMPROVED_SUFFIX.strip(), footnote_text)
 
     def test_llm_tracked_changes(self):
         self.open_llm_dialog()
