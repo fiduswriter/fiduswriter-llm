@@ -97,19 +97,19 @@ export const dialogTemplate = ({text, prompt, mode = "proposals"}) =>
                 </div>
                 <div class="llm-check-label">
                     <input type="checkbox" id="llm-length-check" />
-                    ${gettext("Expect each modified paragraph or heading to differ by at most")}
+                    ${gettext("Reject paragraphs/headings whose length differs by more than")}
                     <input type="number" id="llm-length-percent" value="25" size="3" class="fw-inline" />
-                    %
+                    % ${gettext("from the original")}
                 </div>
                 <div class="llm-check-label">
-                    <input type="checkbox" id="llm-accept-unchanged" />
-                    ${gettext("Accept that some paragraphs or headings may remain unchanged")}
+                    <input type="checkbox" id="llm-require-changes" />
+                    ${gettext("Require every paragraph/heading to be modified by the LLM")}
                 </div>
                 <div class="llm-check-label">
                     <input type="checkbox" id="llm-min-word-diff-check" />
-                    ${gettext("Expect each modified paragraph or heading to differ by at least")}
+                    ${gettext("Reject paragraphs/headings where fewer than")}
                     <input type="number" id="llm-min-word-diff-percent" value="50" size="3" class="fw-inline" />
-                    % ${gettext("of words from the original")}
+                    % ${gettext("of words differ from the original")}
                 </div>
             </td>
         </tr>

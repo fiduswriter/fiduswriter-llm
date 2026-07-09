@@ -66,8 +66,8 @@ export class LLMDialog {
         const translationCheckEl = this.dialog.dialogEl.querySelector(
             "#llm-translation-check"
         )
-        const acceptUnchangedEl = this.dialog.dialogEl.querySelector(
-            "#llm-accept-unchanged"
+        const requireChangesEl = this.dialog.dialogEl.querySelector(
+            "#llm-require-changes"
         )
         const minWordDiffCheckEl = this.dialog.dialogEl.querySelector(
             "#llm-min-word-diff-check"
@@ -77,14 +77,14 @@ export class LLMDialog {
         )
         if (
             !translationCheckEl ||
-            !acceptUnchangedEl ||
+            !requireChangesEl ||
             !minWordDiffCheckEl ||
             !minWordDiffPercentEl
         ) {
             return
         }
         if (translationCheckEl.checked) {
-            acceptUnchangedEl.checked = false
+            requireChangesEl.checked = true
             if (!minWordDiffCheckEl.checked) {
                 minWordDiffCheckEl.checked = true
                 minWordDiffPercentEl.value = 70
@@ -139,10 +139,10 @@ export class LLMDialog {
             )
             return
         }
-        const acceptUnchangedEl = this.dialog.dialogEl.querySelector(
-            "#llm-accept-unchanged"
+        const requireChangesEl = this.dialog.dialogEl.querySelector(
+            "#llm-require-changes"
         )
-        const acceptUnchanged = acceptUnchangedEl?.checked !== false
+        const requireChanges = requireChangesEl?.checked || false
         const minWordDiffCheckEl = this.dialog.dialogEl.querySelector(
             "#llm-min-word-diff-check"
         )
@@ -176,7 +176,7 @@ export class LLMDialog {
             translationCheckEnabled,
             lengthCheckEnabled,
             maxLengthDiffPercent,
-            acceptUnchanged,
+            requireChanges,
             minWordDiffCheckEnabled,
             minWordDiffPercent
         })

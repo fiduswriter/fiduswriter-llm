@@ -781,7 +781,7 @@ export class EditorLLM {
         }
 
         if (
-            !validationOptions.acceptUnchanged &&
+            validationOptions.requireChanges &&
             improvedPlainText === block.plainText
         ) {
             return false
