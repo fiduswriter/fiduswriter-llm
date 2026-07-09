@@ -16,6 +16,11 @@ LLM_URL = getattr(
 LLM_MODEL = getattr(settings, "LLM_MODEL", "meta-llama/llama-3.1-8b-instruct")
 LLM_API_KEY = getattr(settings, "LLM_API_KEY", "")
 LLM_EXTRA_HEADERS = getattr(settings, "LLM_EXTRA_HEADERS", {})
+LLM_MAX_RETRIES = getattr(settings, "LLM_MAX_RETRIES", 3)
+LLM_TIMEOUT = getattr(settings, "LLM_TIMEOUT", 88)
+LLM_CONNECT_TIMEOUT = getattr(settings, "LLM_CONNECT_TIMEOUT", 10)
+
+REQUEST_TIMEOUT = Timeout(LLM_TIMEOUT, connect=LLM_CONNECT_TIMEOUT)
 
 
 def get_user_llm_preferences(user):
@@ -43,6 +48,32 @@ def _provider_url(base_url, path):
     if base_url.endswith("/chat/completions"):
         base_url = base_url[: -len("/chat/completions")]
     return f"{base_url.rstrip('/')}/{path.lstrip('/')}"
+
+
+async def _llm_request_with_retries(client, method, url, **kwargs):
+    """Send an LLM request and retry on transport errors."""
+    last_error = None
+    max_retries = max(LLM_MAX_RETRIES, 0)
+    for attempt in range(max_retries + 1):
+        logger.warning(
+            "Sending LLM request to %s (%s/%s)",
+            url,
+            attempt + 1,
+            max_retries + 1,
+        )
+        try:
+            response = await getattr(client, method)(url, **kwargs)
+            return response
+        except RequestError as exc:
+            last_error = exc
+            logger.exception(
+                "LLM request to %s failed (attempt %s/%s): %s",
+                url,
+                attempt + 1,
+                max_retries + 1,
+                exc,
+            )
+    raise last_error
 
 
 @login_required
@@ -86,30 +117,24 @@ async def improve(request):
         **LLM_EXTRA_HEADERS,
     }
 
-    timeout = Timeout(88.0, connect=10.0)
-    logger.warning(
-        "Sending LLM request to %s (model: %s)", config["url"], config["model"]
-    )
-
-    try:
-        async with AsyncClient() as client:
-            response = await client.post(
+    async with AsyncClient() as client:
+        try:
+            response = await _llm_request_with_retries(
+                client,
+                "post",
                 config["url"],
                 json=payload,
                 headers=headers,
-                timeout=timeout,
+                timeout=REQUEST_TIMEOUT,
             )
-    except RequestError as exc:
-        logger.exception(
-            "LLM request to %s failed: %s", config["url"], exc
-        )
-        return JsonResponse(
-            {
-                "error": "Could not reach the LLM provider.",
-                "details": str(exc),
-            },
-            status=502,
-        )
+        except RequestError as exc:
+            return JsonResponse(
+                {
+                    "error": "Could not reach the LLM provider.",
+                    "details": str(exc),
+                },
+                status=502,
+            )
 
     logger.warning("LLM response status: %s", response.status_code)
 
@@ -165,11 +190,22 @@ async def models(request):
     }
 
     async with AsyncClient() as client:
-        response = await client.get(
-            models_url,
-            headers=headers,
-            timeout=30,
-        )
+        try:
+            response = await _llm_request_with_retries(
+                client,
+                "get",
+                models_url,
+                headers=headers,
+                timeout=Timeout(LLM_TIMEOUT, connect=LLM_CONNECT_TIMEOUT),
+            )
+        except RequestError as exc:
+            return JsonResponse(
+                {
+                    "error": "Could not reach the LLM provider.",
+                    "details": str(exc),
+                },
+                status=502,
+            )
 
     if response.status_code != 200:
         return JsonResponse(

@@ -210,7 +210,7 @@ export class EditorLLM {
         const from = $from.before(depth)
         const to = $from.after(depth)
         const serialized = this.serializeBlock(view.state.doc.nodeAt(from))
-        if (!serialized.text.trim()) {
+        if (!this.blockHasTextContent(serialized.text)) {
             return null
         }
         return {
@@ -223,7 +223,7 @@ export class EditorLLM {
         view.state.doc.descendants((node, pos) => {
             if (TEXT_BLOCK_TYPES.includes(node.type.name)) {
                 const serialized = this.serializeBlock(node)
-                if (serialized.text.trim().length) {
+                if (this.blockHasTextContent(serialized.text)) {
                     blocks.push({
                         ...serialized,
                         from: pos,
@@ -323,56 +323,73 @@ export class EditorLLM {
                 proposalCount = this.createProposals({view, results})
             } else {
                 const llmUser = this.getLLMUser()
-                const results = []
-                for (let i = 0; i < blocks.length; i++) {
-                    const block = blocks[i]
-                    progress.update(
-                        Math.round((i / totalBlocks) * 100),
-                        interpolate(gettext("Processing block %s of %s..."), [
-                            i + 1,
-                            totalBlocks
-                        ])
-                    )
-                    const {improvedText, isValid} =
-                        await this.processBlockWithRetries({
-                            prompt,
-                            outputMode,
-                            view,
-                            block,
-                            signal: abortController.signal,
-                            validationOptions
-                        })
-                    if (outputMode === "comments") {
+                if (outputMode === "comments") {
+                    for (let i = 0; i < blocks.length; i++) {
+                        const block = blocks[i]
+                        progress.update(
+                            Math.round((i / totalBlocks) * 100),
+                            interpolate(
+                                gettext("Processing block %s of %s..."),
+                                [i + 1, totalBlocks]
+                            )
+                        )
+                        const {improvedText} =
+                            await this.processBlockWithRetries({
+                                prompt,
+                                outputMode,
+                                view,
+                                block,
+                                signal: abortController.signal,
+                                validationOptions
+                            })
                         this.applyComments({
                             view,
                             block,
                             commentsText: improvedText,
                             llmUser
                         })
-                    } else {
-                        results.push({block, improvedText, isValid})
                     }
-                }
-                if (outputMode !== "comments") {
-                    const sortedResults = results
-                        .slice()
-                        .sort((a, b) => b.block.from - a.block.from)
-                    for (const {
-                        block,
-                        improvedText,
-                        isValid
-                    } of sortedResults) {
-                        const forceTracked = outputMode === "direct" && !isValid
-                        if (improvedText === block.text && !forceTracked) {
+                } else {
+                    let offset = 0
+                    for (let i = 0; i < blocks.length; i++) {
+                        const block = blocks[i]
+                        progress.update(
+                            Math.round((i / totalBlocks) * 100),
+                            interpolate(
+                                gettext("Processing block %s of %s..."),
+                                [i + 1, totalBlocks]
+                            )
+                        )
+                        const {improvedText, isValid} =
+                            await this.processBlockWithRetries({
+                                prompt,
+                                outputMode,
+                                view,
+                                block,
+                                signal: abortController.signal,
+                                validationOptions
+                            })
+                        if (!improvedText.trim()) {
                             continue
                         }
+                        if (improvedText === block.text) {
+                            continue
+                        }
+                        const currentBlock = {
+                            ...block,
+                            from: block.from + offset,
+                            to: block.to + offset
+                        }
+                        const docSizeBefore = view.state.doc.content.size
+                        const forceTracked = outputMode === "direct" && !isValid
                         this.applyImprovedBlock({
                             view,
-                            block,
+                            block: currentBlock,
                             improvedText,
                             asTracked: outputMode === "changes" || forceTracked,
                             llmUser
                         })
+                        offset += view.state.doc.content.size - docSizeBefore
                     }
                 }
             }
@@ -525,6 +542,10 @@ export class EditorLLM {
     }
 
     isImprovedTextValid({block, improvedText, outputMode, validationOptions}) {
+        if (improvedText.length === 0) {
+            return false
+        }
+
         if (outputMode === "comments" || outputMode === "global_comment") {
             return true
         }
@@ -632,11 +653,13 @@ export class EditorLLM {
         view.state.doc.descendants((node, pos) => {
             if (TEXT_BLOCK_TYPES.includes(node.type.name)) {
                 const serialized = this.serializeBlock(node)
-                blocks.push({
-                    text: serialized.text,
-                    from: pos,
-                    to: pos + node.nodeSize
-                })
+                if (this.blockHasTextContent(serialized.text)) {
+                    blocks.push({
+                        text: serialized.text,
+                        from: pos,
+                        to: pos + node.nodeSize
+                    })
+                }
             }
         })
         return blocks
@@ -662,6 +685,10 @@ export class EditorLLM {
 
     normalizePlaceholders(text) {
         return text.replace(PLACEHOLDER_PATTERN, "[NODE:$1:$2]")
+    }
+
+    blockHasTextContent(text) {
+        return text.replace(PLACEHOLDER_PATTERN, "").trim().length > 0
     }
 
     docPosFromTextOffset(block, textOffset) {
@@ -752,6 +779,9 @@ export class EditorLLM {
         const llmUser = this.getLLMUser()
         const proposals = []
         results.forEach(({block, improvedText}) => {
+            if (!improvedText.trim()) {
+                return
+            }
             if (improvedText === block.text) {
                 return
             }

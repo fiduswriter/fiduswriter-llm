@@ -44,6 +44,12 @@ Installation
         "X-Title": "Fidus Writer",
     }
 
+   You can also control retries and timeouts (defaults are shown)::
+
+    LLM_MAX_RETRIES = 3
+    LLM_TIMEOUT = 88
+    LLM_CONNECT_TIMEOUT = 10
+
 4. Run the transpiler to build the JavaScript bundle::
 
     python fiduswriter/manage.py transpile --force
