@@ -5,6 +5,11 @@ import {LLMReviewDialog} from "./review_dialog"
 
 const key = new PluginKey("llm")
 
+export const setProcessing = (state, processing) => {
+    const keyState = key.getState(state)
+    return state.tr.setMeta(key, {...keyState, processing})
+}
+
 export const setProposals = (state, newProposals) => {
     const keyState = key.getState(state)
     let decos = keyState.decos
@@ -66,7 +71,8 @@ export const llmPlugin = options =>
             init() {
                 return {
                     decos: DecorationSet.empty,
-                    proposals: []
+                    proposals: [],
+                    processing: false
                 }
             },
             apply(tr, prev, _oldState, _state) {
@@ -87,13 +93,27 @@ export const llmPlugin = options =>
                     })
                 })
 
-                return {decos, proposals}
+                return {decos, proposals, processing: prev.processing}
             }
         },
         props: {
             decorations(state) {
                 const {decos} = this.getState(state)
                 return decos
+            },
+            filterTransaction(tr, state) {
+                const {processing} = key.getState(state) || {}
+                if (!processing) {
+                    return true
+                }
+                if (tr.getMeta("remote") && tr.steps.length > 0) {
+                    options.editorLlm?.cancelCurrentImprovement()
+                    return true
+                }
+                if (tr.steps.length === 0 || tr.getMeta("remote")) {
+                    return true
+                }
+                return Boolean(tr.getMeta("llm") || tr.getMeta(key))
             },
             handleDOMEvents: {
                 contextmenu(view, event) {

@@ -6,6 +6,7 @@ import {
     llmPlugin,
     removeAllProposals,
     removeProposal,
+    setProcessing,
     setProposals
 } from "./state_plugin"
 
@@ -46,6 +47,7 @@ let proposalIdCounter = 0
 export class EditorLLM {
     constructor(editor) {
         this.editor = editor
+        this.currentAbortController = null
     }
 
     init() {
@@ -171,6 +173,19 @@ export class EditorLLM {
         }
     }
 
+    setProcessing(view, processing) {
+        const tr = setProcessing(view.state, processing)
+        if (tr) {
+            view.dispatch(tr)
+        }
+    }
+
+    cancelCurrentImprovement() {
+        if (this.currentAbortController) {
+            this.currentAbortController.abort()
+        }
+    }
+
     getLLMUser() {
         const settings = this.editor.app.settings
         const prefs = this.editor.user.preferences || {}
@@ -278,6 +293,7 @@ export class EditorLLM {
             ? gettext("Asking LLM for comments...")
             : gettext("Sending text to LLM...")
         const abortController = new AbortController()
+        this.currentAbortController = abortController
         const totalBlocks = blocks.length
         const progress = new ProgressTask("info", {
             title,
@@ -287,6 +303,7 @@ export class EditorLLM {
             onCancel: () => abortController.abort()
         })
         progress.open()
+        this.setProcessing(view, true)
 
         try {
             if (outputMode === "global_comment") {
@@ -418,6 +435,9 @@ export class EditorLLM {
                     error.message || gettext("Could not apply LLM improvement.")
                 )
             }
+        } finally {
+            this.currentAbortController = null
+            this.setProcessing(view, false)
         }
     }
 
