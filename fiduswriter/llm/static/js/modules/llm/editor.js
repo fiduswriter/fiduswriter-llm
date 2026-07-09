@@ -458,6 +458,7 @@ export class EditorLLM {
                 if (outputMode === "comments") {
                     for (let i = 0; i < blocks.length; i++) {
                         const block = blocks[i]
+                        this.computePlaceholderPositions(block)
                         progress.update(
                             Math.round((i / totalBlocks) * 100),
                             interpolate(
@@ -480,6 +481,33 @@ export class EditorLLM {
                             commentsText: improvedText,
                             llmUser
                         })
+                        const footnoteImprovements =
+                            await this.processFootnotes({
+                                prompt,
+                                outputMode,
+                                view,
+                                block,
+                                signal: abortController.signal,
+                                validationOptions
+                            })
+                        for (const placeholder of block.placeholders) {
+                            if (
+                                placeholder.type !== "footnote" ||
+                                !placeholder.footnoteText.trim() ||
+                                !footnoteImprovements.has(placeholder.index)
+                            ) {
+                                continue
+                            }
+                            const improvedFootnoteText =
+                                footnoteImprovements.get(placeholder.index)
+                            this.applyCommentsToRange({
+                                view,
+                                from: placeholder.absPos,
+                                to: placeholder.absPos + placeholder.node.nodeSize,
+                                commentsText: improvedFootnoteText,
+                                llmUser
+                            })
+                        }
                     }
                 } else {
                     let offset = 0
@@ -498,6 +526,7 @@ export class EditorLLM {
                         )
                         let improvedText = ""
                         let isValid = false
+                        let mainTextChanged = false
                         if (hasMainText) {
                             const result = await this.processBlockWithRetries({
                                 prompt,
@@ -509,14 +538,12 @@ export class EditorLLM {
                             })
                             improvedText = result.improvedText
                             isValid = result.isValid
-                            if (!improvedText.trim()) {
-                                continue
-                            }
                             if (
-                                this.stripMarkTags(improvedText) ===
-                                block.plainText
+                                improvedText.trim() &&
+                                this.stripMarkTags(improvedText) !==
+                                    block.plainText
                             ) {
-                                continue
+                                mainTextChanged = true
                             }
                         }
                         const currentBlock = {
@@ -534,9 +561,14 @@ export class EditorLLM {
                                 signal: abortController.signal,
                                 validationOptions
                             })
-                        if (hasMainText) {
+                        if (mainTextChanged || footnoteImprovements.size) {
+                            if (!mainTextChanged) {
+                                improvedText = block.text
+                            }
                             const forceTracked =
-                                outputMode === "direct" && !isValid
+                                outputMode === "direct" &&
+                                !isValid &&
+                                mainTextChanged
                             this.applyImprovedBlock({
                                 view,
                                 block: currentBlock,
@@ -1543,6 +1575,16 @@ export class EditorLLM {
     }
 
     applyComments({view, block, commentsText, llmUser}) {
+        this.applyCommentsToRange({
+            view,
+            from: block.from + 1,
+            to: block.to - 1,
+            commentsText,
+            llmUser
+        })
+    }
+
+    applyCommentsToRange({view, from, to, commentsText, llmUser}) {
         const store = this.editor.mod?.comments?.store
         if (!store) {
             throw new Error(gettext("Comments are not available."))
@@ -1573,7 +1615,7 @@ export class EditorLLM {
                 ],
                 isMajor: false
             }
-            store.addComment(commentData, block.from + 1, block.to - 1, view)
+            store.addComment(commentData, from, to, view)
         })
     }
 

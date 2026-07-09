@@ -3,7 +3,8 @@ import {escapeText, gettext} from "fwtoolkit"
 const PREVIEW_PLACEHOLDER_LABELS = {
     citation: gettext("citation"),
     equation: gettext("equation"),
-    cross_reference: gettext("cross-reference")
+    cross_reference: gettext("cross-reference"),
+    footnote: gettext("footnote")
 }
 
 const PREVIEW_PLACEHOLDER_PATTERN = /\[NODE:\s*(\w+)\s*:\s*(\d+)\s*\]/gi
