@@ -214,8 +214,9 @@ LLM_GLOBAL_COMMENT = "This is a global LLM comment."
 class MockLLMHandler(BaseHTTPRequestHandler):
     """A tiny mock LLM server.
 
-    It appends a suffix to each TEXT TO IMPROVE block so the frontend has a
-    predictable change to verify.
+    It makes a small word-level change ("erors" -> "errors") and appends a
+    suffix to each TEXT TO IMPROVE block so the frontend has predictable
+    changes to verify.
     """
 
     def log_message(self, format, *args):
@@ -256,6 +257,9 @@ class MockLLMHandler(BaseHTTPRequestHandler):
             else:
                 text = ""
             if text:
+                # Make a word-level change so tests can verify both deletions
+                # and insertions.
+                text = text.replace("erors", "errors")
                 content = text + LLM_IMPROVED_SUFFIX
             else:
                 content = LLM_IMPROVED_SUFFIX
@@ -416,12 +420,16 @@ class LLMSeleniumTest(ChannelsLiveServerTestCase, SeleniumHelper):
     def test_llm_tracked_changes(self):
         self.open_llm_dialog()
         self.run_llm("changes", "LLM improvement applied.")
-        insertion = WebDriverWait(self.driver, self.wait_time).until(
+        WebDriverWait(self.driver, self.wait_time).until(
             EC.presence_of_element_located(
                 (By.CSS_SELECTOR, ".doc-body .insertion")
             )
         )
-        self.assertIn(LLM_IMPROVED_SUFFIX.strip(), insertion.text)
+        insertions = self.driver.find_elements(
+            By.CSS_SELECTOR, ".doc-body .insertion"
+        )
+        insertion_text = " ".join(ins.text for ins in insertions)
+        self.assertIn(LLM_IMPROVED_SUFFIX.strip(), insertion_text)
         deletions = self.driver.find_elements(
             By.CSS_SELECTOR, ".doc-body .deletion"
         )

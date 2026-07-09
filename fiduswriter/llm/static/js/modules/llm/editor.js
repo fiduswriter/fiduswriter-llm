@@ -871,48 +871,302 @@ export class EditorLLM {
                   approved: false
               })
             : null
+        const deletionMark = asTracked
+            ? schema.marks.deletion.create({
+                  user: user.id,
+                  username: user.username,
+                  date
+              })
+            : null
 
-        const newNodes = this.deserializeImprovedText(
+        const newNodes = this.buildWordDiffNodes({
+            block,
             improvedText,
-            block.placeholders,
-            schema,
-            insertionMark
-        )
-
-        if (!asTracked) {
-            const tr = view.state.tr
-                .replaceWith(block.from + 1, block.to - 1, newNodes)
-                .setMeta("llm", true)
-            view.dispatch(tr)
-            view.focus()
-            return
-        }
-
-        const deletionMark = schema.marks.deletion.create({
-            user: user.id,
-            username: user.username,
-            date
-        })
-
-        const oldNodes = []
-        block.node.forEach(child => {
-            if (child.isText) {
-                oldNodes.push(
-                    schema.text(child.text, [...child.marks, deletionMark])
-                )
-            } else {
-                oldNodes.push(child.mark(child.marks.concat(deletionMark)))
-            }
+            insertionMark,
+            deletionMark,
+            asTracked
         })
 
         const tr = view.state.tr
-            .replaceWith(block.from + 1, block.to - 1, [
-                ...oldNodes,
-                ...newNodes
-            ])
+            .replaceWith(block.from + 1, block.to - 1, newNodes)
             .setMeta("llm", true)
         view.dispatch(tr)
         view.focus()
+    }
+
+    splitBlockIntoChunks(block) {
+        const chunks = []
+        let currentText = ""
+        const currentTextNodes = []
+        let textOffset = 0
+        let placeholderIndex = 0
+
+        block.node.forEach(child => {
+            if (child.isText) {
+                currentText += child.text
+                currentTextNodes.push({
+                    node: child,
+                    start: textOffset,
+                    end: textOffset + child.text.length
+                })
+                textOffset += child.text.length
+            } else if (
+                child.isInline &&
+                PLACEHOLDER_TYPES.includes(child.type.name)
+            ) {
+                if (currentTextNodes.length) {
+                    chunks.push({
+                        type: "text",
+                        text: currentText,
+                        nodes: currentTextNodes
+                    })
+                    currentText = ""
+                    currentTextNodes.length = 0
+                    textOffset = 0
+                }
+                const placeholder = block.placeholders[placeholderIndex]
+                chunks.push({
+                    type: "placeholder",
+                    index: placeholder ? placeholder.index : -1,
+                    node: child,
+                    id: placeholder ? placeholder.id : ""
+                })
+                placeholderIndex += 1
+            }
+        })
+
+        if (currentTextNodes.length) {
+            chunks.push({
+                type: "text",
+                text: currentText,
+                nodes: currentTextNodes
+            })
+        }
+
+        return chunks
+    }
+
+    splitImprovedTextIntoChunks(text) {
+        const chunks = []
+        let lastIndex = 0
+        let match
+        PLACEHOLDER_PATTERN.lastIndex = 0
+        while ((match = PLACEHOLDER_PATTERN.exec(text)) !== null) {
+            const before = text.slice(lastIndex, match.index)
+            if (before.length) {
+                chunks.push({type: "text", text: before})
+            }
+            chunks.push({
+                type: "placeholder",
+                index: Number.parseInt(match[2], 10)
+            })
+            lastIndex = match.index + match[0].length
+        }
+        if (lastIndex < text.length) {
+            chunks.push({type: "text", text: text.slice(lastIndex)})
+        }
+        return chunks
+    }
+
+    buildWordDiffNodes({
+        block,
+        improvedText,
+        insertionMark,
+        deletionMark,
+        asTracked
+    }) {
+        const originalChunks = this.splitBlockIntoChunks(block)
+        const improvedChunks = this.splitImprovedTextIntoChunks(improvedText)
+
+        if (originalChunks.length !== improvedChunks.length) {
+            throw new Error(
+                gettext(
+                    "The LLM did not preserve all non-text elements. Please try again with different instructions."
+                )
+            )
+        }
+
+        const nodes = []
+        for (let i = 0; i < originalChunks.length; i++) {
+            const origChunk = originalChunks[i]
+            const improvedChunk = improvedChunks[i]
+
+            if (origChunk.type === "placeholder") {
+                if (
+                    improvedChunk.type !== "placeholder" ||
+                    origChunk.index !== improvedChunk.index
+                ) {
+                    throw new Error(
+                        gettext(
+                            "The LLM did not preserve all non-text elements. Please try again with different instructions."
+                        )
+                    )
+                }
+                nodes.push(origChunk.node)
+                continue
+            }
+
+            if (improvedChunk.type !== "text") {
+                throw new Error(
+                    gettext(
+                        "The LLM did not preserve all non-text elements. Please try again with different instructions."
+                    )
+                )
+            }
+
+            const chunkNodes = this.buildTextChunkNodes({
+                origChunk,
+                improvedText: improvedChunk.text,
+                insertionMark,
+                deletionMark,
+                asTracked
+            })
+            nodes.push(...chunkNodes)
+        }
+
+        return nodes
+    }
+
+    buildTextChunkNodes({
+        origChunk,
+        improvedText,
+        insertionMark,
+        deletionMark,
+        asTracked
+    }) {
+        const diffs = diffWordsWithSpace(origChunk.text, improvedText)
+        const nodes = []
+        let sourceOffset = 0
+
+        for (let i = 0; i < diffs.length; i++) {
+            const diff = diffs[i]
+            if (diff.added) {
+                const baseMarks = this.baseMarksForAddedDiff({
+                    diffs,
+                    index: i,
+                    sourceOffset,
+                    origChunk
+                })
+                const marks = insertionMark
+                    ? baseMarks.concat(insertionMark)
+                    : baseMarks
+                if (diff.value.length) {
+                    nodes.push(
+                        origChunk.nodes[0].node.type.schema.text(
+                            diff.value,
+                            marks
+                        )
+                    )
+                }
+            } else if (diff.removed) {
+                if (asTracked) {
+                    const rangeNodes = this.sliceTextChunkNodes(
+                        origChunk,
+                        sourceOffset,
+                        sourceOffset + diff.value.length
+                    )
+                    rangeNodes.forEach(node => {
+                        if (node.isText) {
+                            nodes.push(
+                                node.type.schema.text(
+                                    node.text,
+                                    node.marks.concat(deletionMark)
+                                )
+                            )
+                        } else {
+                            nodes.push(
+                                node.mark(node.marks.concat(deletionMark))
+                            )
+                        }
+                    })
+                }
+                sourceOffset += diff.value.length
+            } else {
+                const rangeNodes = this.sliceTextChunkNodes(
+                    origChunk,
+                    sourceOffset,
+                    sourceOffset + diff.value.length
+                )
+                nodes.push(...rangeNodes)
+                sourceOffset += diff.value.length
+            }
+        }
+
+        return nodes
+    }
+
+    baseMarksForAddedDiff({diffs, index, sourceOffset, origChunk}) {
+        const prevDiff = index > 0 ? diffs[index - 1] : null
+        const nextDiff =
+            index < diffs.length - 1 ? diffs[index + 1] : null
+
+        if (prevDiff && prevDiff.removed) {
+            return this.getMarksAtChunkOffset(
+                origChunk,
+                sourceOffset - prevDiff.value.length,
+                sourceOffset
+            )
+        }
+        if (nextDiff && nextDiff.removed) {
+            return this.getMarksAtChunkOffset(
+                origChunk,
+                sourceOffset,
+                sourceOffset + nextDiff.value.length
+            )
+        }
+        if (prevDiff && !prevDiff.added) {
+            return this.getMarksAtChunkOffset(
+                origChunk,
+                sourceOffset - prevDiff.value.length,
+                sourceOffset
+            )
+        }
+        if (nextDiff && !nextDiff.added) {
+            return this.getMarksAtChunkOffset(
+                origChunk,
+                sourceOffset,
+                sourceOffset + nextDiff.value.length
+            )
+        }
+        return []
+    }
+
+    getMarksAtChunkOffset(origChunk, start, end) {
+        for (const item of origChunk.nodes) {
+            if (item.end <= start) {
+                continue
+            }
+            if (item.start >= end) {
+                break
+            }
+            return item.node.marks
+        }
+        return []
+    }
+
+    sliceTextChunkNodes(origChunk, start, end) {
+        const nodes = []
+        for (const item of origChunk.nodes) {
+            if (item.end <= start) {
+                continue
+            }
+            if (item.start >= end) {
+                break
+            }
+            const overlapStart = Math.max(item.start, start)
+            const overlapEnd = Math.min(item.end, end)
+            const node = item.node
+            if (node.isText) {
+                const sliceText = node.text.slice(
+                    overlapStart - item.start,
+                    overlapEnd - item.start
+                )
+                nodes.push(node.type.schema.text(sliceText, node.marks))
+            } else {
+                nodes.push(node)
+            }
+        }
+        return nodes
     }
 
     applyComments({view, block, commentsText, llmUser}) {
@@ -1055,78 +1309,5 @@ export class EditorLLM {
             comment: paragraphs,
             isMajor: false
         })
-    }
-
-    deserializeImprovedText(text, placeholders, schema, insertionMark) {
-        const placeholderMap = new Map()
-        placeholders.forEach(p => {
-            const key = `${p.type}:${p.index}`
-            placeholderMap.set(key, p)
-        })
-
-        const parts = []
-        let lastIndex = 0
-        let match
-        PLACEHOLDER_PATTERN.lastIndex = 0
-        while ((match = PLACEHOLDER_PATTERN.exec(text)) !== null) {
-            const [fullMatch, type, indexStr] = match
-            const before = text.slice(lastIndex, match.index)
-            if (before.length) {
-                parts.push({kind: "text", value: before})
-            }
-            parts.push({
-                kind: "placeholder",
-                type,
-                index: Number.parseInt(indexStr, 10)
-            })
-            lastIndex = match.index + fullMatch.length
-        }
-        if (lastIndex < text.length) {
-            parts.push({kind: "text", value: text.slice(lastIndex)})
-        }
-
-        const nodes = []
-        const seenPlaceholders = new Set()
-        parts.forEach(part => {
-            if (part.kind === "text") {
-                if (part.value.length) {
-                    nodes.push(
-                        schema.text(
-                            part.value,
-                            insertionMark ? [insertionMark] : []
-                        )
-                    )
-                }
-            } else {
-                const type = part.type.toLowerCase()
-                const key = `${type}:${part.index}`
-                const placeholder = placeholderMap.get(key)
-                if (!placeholder) {
-                    throw new Error(
-                        gettext(
-                            "The LLM returned an unexpected placeholder. Please try again with different instructions."
-                        )
-                    )
-                }
-                seenPlaceholders.add(key)
-                const marks = insertionMark
-                    ? placeholder.node.marks.concat(insertionMark)
-                    : placeholder.node.marks
-                nodes.push(placeholder.node.mark(marks))
-            }
-        })
-
-        const missing = placeholders.filter(
-            p => !seenPlaceholders.has(`${p.type}:${p.index}`)
-        )
-        if (missing.length) {
-            throw new Error(
-                gettext(
-                    "The LLM did not preserve all non-text elements. Please try again with different instructions."
-                )
-            )
-        }
-
-        return nodes
     }
 }
