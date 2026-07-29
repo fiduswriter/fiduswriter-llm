@@ -1,0 +1,539 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Fidus Writer llm\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-07-23 08:19+0000\n"
+"Language: tr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: POEditor.com\n"
+
+#: llm/static/js/modules/llm/dialog.js:16
+msgid "Improve text with LLM"
+msgstr "LLM ile metni iyileştirin"
+
+#: llm/static/js/modules/llm/dialog.js:24
+msgid "Improve"
+msgstr "Geliştirmek"
+
+#: llm/static/js/modules/llm/dialog.js:114
+msgid "Please enter instructions."
+msgstr "Lütfen talimatları girin."
+
+#: llm/static/js/modules/llm/dialog.js:137
+msgid "Please enter a valid maximum length difference percentage."
+msgstr "Lütfen geçerli bir maksimum uzunluk farkı yüzdesi girin."
+
+#: llm/static/js/modules/llm/dialog.js:165
+msgid "Please enter a valid minimum word difference percentage."
+msgstr "Lütfen geçerli bir minimum kelime farkı yüzdesi girin."
+
+#: llm/static/js/modules/llm/editor.js:29
+msgid "title"
+msgstr "başlık"
+
+#: llm/static/js/modules/llm/editor.js:30
+msgid "paragraph"
+msgstr "paragraf"
+
+#: llm/static/js/modules/llm/editor.js:31
+#: llm/static/js/modules/llm/editor.js:32
+#: llm/static/js/modules/llm/editor.js:33
+#: llm/static/js/modules/llm/editor.js:34
+#: llm/static/js/modules/llm/editor.js:35
+#: llm/static/js/modules/llm/editor.js:36
+msgid "heading"
+msgstr "başlık"
+
+#: llm/static/js/modules/llm/editor.js:37
+msgid "figure caption"
+msgstr "Şekil başlığı"
+
+#: llm/static/js/modules/llm/editor.js:38
+msgid "table caption"
+msgstr "tablo başlığı"
+
+#: llm/static/js/modules/llm/editor.js:39
+msgid "code block"
+msgstr "kod bloğu"
+
+#: llm/static/js/modules/llm/editor.js:117
+msgid "LLM text improvement"
+msgstr "LLM metin iyileştirmesi"
+
+#: llm/static/js/modules/llm/editor.js:124
+msgid "Improve entire text"
+msgstr "Metnin tamamını geliştir"
+
+#: llm/static/js/modules/llm/editor.js:127
+msgid "Send the entire text to an LLM for improvement."
+msgstr "Metnin tamamını iyileştirme için bir LLM'ye gönderin."
+
+#: llm/static/js/modules/llm/editor.js:135
+msgid "Clear LLM proposals"
+msgstr "LLM tekliflerini temizle"
+
+#: llm/static/js/modules/llm/editor.js:138
+msgid "Remove any LLM change proposals from the document."
+msgstr "Tüm LLM değişiklik tekliflerini belgeden kaldırın."
+
+#: llm/static/js/modules/llm/editor.js:146
+msgid "Highlight LLM additions"
+msgstr "LLM ilavelerini vurgulayın"
+
+#: llm/static/js/modules/llm/editor.js:149
+msgid "Highlight text that has been added by the LLM."
+msgstr "LLM tarafından eklenen metni vurgulayın."
+
+#: llm/static/js/modules/llm/editor.js:168
+msgid "Improve with LLM"
+msgstr "LLM ile kendinizi geliştirin"
+
+#: llm/static/js/modules/llm/editor.js:188
+msgid "No text found to improve."
+msgstr "Geliştirilecek metin bulunamadı."
+
+#: llm/static/js/modules/llm/editor.js:243
+msgid "unknown model"
+msgstr "bilinmeyen model"
+
+#: llm/static/js/modules/llm/editor.js:442
+msgid "Asking LLM for comments..."
+msgstr "LLM'den yorumlar isteniyor..."
+
+#: llm/static/js/modules/llm/editor.js:443
+msgid "Sending text to LLM..."
+msgstr "LLM'ye metin gönderiliyor..."
+
+#: llm/static/js/modules/llm/editor.js:449
+msgid "Preparing..."
+msgstr "Hazırlanıyor..."
+
+#: llm/static/js/modules/llm/editor.js:474
+#: llm/static/js/modules/llm/editor.js:499
+#: llm/static/js/modules/llm/editor.js:554
+#, javascript-format
+msgid "Processing block %s of %s..."
+msgstr "%s bloğunun %s bloğu işleniyor..."
+
+#: llm/static/js/modules/llm/editor.js:622
+#: llm/static/js/modules/llm/editor.js:1961
+msgid "Done"
+msgstr "Tamamlamak"
+
+#: llm/static/js/modules/llm/editor.js:627
+msgid "LLM comments added."
+msgstr "LLM yorumları eklendi."
+
+#: llm/static/js/modules/llm/editor.js:631
+msgid "LLM proposals created. Right-click a highlighted passage to review."
+msgstr ""
+"LLM teklifleri oluşturuldu. İncelemek için vurgulanan bir pasaja sağ "
+"tıklayın."
+
+#: llm/static/js/modules/llm/editor.js:633
+msgid "No LLM change proposals were necessary."
+msgstr "LLM değişiklik teklifine gerek yoktu."
+
+#: llm/static/js/modules/llm/editor.js:634
+msgid "LLM improvement applied."
+msgstr "Yüksek Lisans iyileştirmesi uygulandı."
+
+#: llm/static/js/modules/llm/editor.js:639
+msgid "LLM improvement cancelled."
+msgstr "Yüksek Lisans iyileştirmesi iptal edildi."
+
+#: llm/static/js/modules/llm/editor.js:643
+msgid "Could not apply LLM improvement."
+msgstr "Yüksek Lisans iyileştirmesi uygulanamadı."
+
+#: llm/static/js/modules/llm/editor.js:661
+msgid "text passage"
+msgstr "metin pasajı"
+
+#: llm/static/js/modules/llm/editor.js:666
+msgid "You are editing a"
+msgstr "Bir düzenleme yapıyorsunuz"
+
+#: llm/static/js/modules/llm/editor.js:668
+msgid ""
+"Keep it as a heading: concise, preferably not a full sentence, and suitable "
+"as a section title."
+msgstr ""
+"Bunu bir başlık olarak tutun: Kısa, tercihen tam bir cümle değil ve bölüm "
+"başlığı olarak uygun."
+
+#: llm/static/js/modules/llm/editor.js:671
+msgid "Keep it as a document title: concise and not a full sentence."
+msgstr "Bunu bir belge başlığı olarak saklayın: kısa ve tam bir cümle değil."
+
+#: llm/static/js/modules/llm/editor.js:674
+msgid ""
+"Only fix obvious typos or formatting issues in the code; do not change the "
+"logic."
+msgstr ""
+"Yalnızca koddaki belirgin yazım hatalarını veya biçimlendirme sorunlarını "
+"düzeltin; mantığı değiştirmeyin."
+
+#: llm/static/js/modules/llm/editor.js:677
+msgid "Context before this passage:"
+msgstr "Bu pasajdan önceki bağlam:"
+
+#: llm/static/js/modules/llm/editor.js:680
+msgid "Context after this passage:"
+msgstr "Bu pasajdan sonraki metin:"
+
+#: llm/static/js/modules/llm/editor.js:684
+msgid "The text contains placeholders such as"
+msgstr "Metin aşağıdaki gibi yer tutucular içerir:"
+
+#: llm/static/js/modules/llm/editor.js:684
+msgid ""
+"representing non-text elements (citations, equations, cross-references). You"
+" MUST preserve these placeholders exactly and in the same order. Do not "
+"modify them. Only improve the surrounding text."
+msgstr ""
+"metin dışı öğeleri temsil eder (alıntılar, denklemler, çapraz referanslar). "
+"Bu yer tutucuları tam olarak ve aynı sırada korumanız GEREKİR. Bunları "
+"değiştirmeyin. Yalnızca çevredeki metni iyileştirin."
+
+#: llm/static/js/modules/llm/editor.js:688
+msgid ""
+"The text also contains formatting markers such as "
+"[MARK:strong:0]...[/MARK:strong:0] for bold, [MARK:em:0]...[/MARK:em:0] for "
+"italic, [MARK:link:0]...[/MARK:link:0] for links, and "
+"[MARK:comment:0]...[/MARK:comment:0] for comments. You MUST preserve these "
+"markers exactly. Do not modify them."
+msgstr ""
+"Metin aynı zamanda kalın için [MARK:strong:0]...[/MARK:strong:0], italik "
+"için [MARK:em:0]...[/MARK:em:0], bağlantılar için "
+"[MARK:link:0]...[/MARK:link:0] ve yorumlar için "
+"[MARK:comment:0]...[/MARK:comment:0] gibi biçimlendirme işaretlerini de "
+"içerir. Bu işaretleri tam olarak korumanız GEREKİR. Bunları değiştirmeyin."
+
+#: llm/static/js/modules/llm/editor.js:697
+msgid ""
+"Do not rewrite the text. Instead, briefly explain what could be improved "
+"about it. Respond with one or more short comments, one per line."
+msgstr ""
+"Metni yeniden yazmayın. Bunun yerine, bu konuda nelerin "
+"geliştirilebileceğini kısaca açıklayın. Her satıra bir tane olmak üzere bir "
+"veya daha fazla kısa yorumla yanıt verin."
+
+#: llm/static/js/modules/llm/editor.js:699
+#, javascript-format
+msgid ""
+"Translate every sentence to %s. Do not improve or rewrite the text in the "
+"original language."
+msgstr ""
+"Her cümleyi %s diline çevirin. Metni orijinal dilinde iyileştirmeyin veya "
+"yeniden yazmayın."
+
+#: llm/static/js/modules/llm/editor.js:705
+msgid ""
+"Return ONLY one or more short comments, one per line. Do not include these "
+"instructions, the context, or any explanations. Do not rewrite the text."
+msgstr ""
+"Her satıra bir tane gelecek şekilde YALNIZCA bir veya daha fazla kısa yorum "
+"döndürün. Bu talimatları, içeriği veya herhangi bir açıklamayı eklemeyin. "
+"Metni yeniden yazmayın."
+
+#: llm/static/js/modules/llm/editor.js:711
+#, javascript-format
+msgid ""
+"Return ONLY the %s translation of the text below. Do not return any part of "
+"it in the original language or any other language. Do not include these "
+"instructions, the context, or any explanations. Do not quote the text. "
+"Preserve all placeholders exactly."
+msgstr ""
+"Aşağıdaki metnin YALNIZCA %s çevirisini döndürün. Hiçbir kısmını orijinal "
+"dilinde veya başka bir dilde iade etmeyin. Bu talimatları, içeriği veya "
+"herhangi bir açıklamayı eklemeyin. Metinden alıntı yapmayın. Tüm yer "
+"tutucuları tam olarak koruyun."
+
+#: llm/static/js/modules/llm/editor.js:717
+msgid ""
+"Return ONLY the translation of the text below in the language requested "
+"above. Do not return any part of it in the original language or any other "
+"language. Do not include these instructions, the context, or any "
+"explanations. Do not quote the text. Preserve all placeholders exactly."
+msgstr ""
+"YALNIZCA aşağıdaki metnin yukarıda istenen dile çevirisini gönderin. Hiçbir "
+"kısmını orijinal dilinde veya başka bir dilde iade etmeyin. Bu talimatları, "
+"içeriği veya herhangi bir açıklamayı eklemeyin. Metinden alıntı yapmayın. "
+"Tüm yer tutucuları tam olarak koruyun."
+
+#: llm/static/js/modules/llm/editor.js:722
+msgid ""
+"Return ONLY the improved version of the text below. If the text is already "
+"correct and needs no changes, return it exactly as provided. Do not include "
+"these instructions, the context, or any explanations in your response. Do "
+"not quote the text. Preserve all placeholders exactly."
+msgstr ""
+"YALNIZCA aşağıdaki metnin geliştirilmiş sürümünü döndürün. Metin zaten "
+"doğruysa ve herhangi bir değişiklik gerektirmiyorsa, tam olarak belirtildiği"
+" şekilde iade edin. Yanıtınıza bu talimatları, bağlamı veya herhangi bir "
+"açıklamayı dahil etmeyin. Metinden alıntı yapmayın. Tüm yer tutucuları tam "
+"olarak koruyun."
+
+#: llm/static/js/modules/llm/editor.js:726
+msgid "TEXT TO IMPROVE:"
+msgstr "GELİŞTİRİLECEK METİN:"
+
+#: llm/static/js/modules/llm/editor.js:738
+#: llm/static/js/modules/llm/editor.js:1985
+msgid "LLM request failed."
+msgstr "Yüksek Lisans isteği başarısız oldu."
+
+#: llm/static/js/modules/llm/editor.js:1497
+msgid ""
+"The LLM returned an unexpected placeholder. Please try again with different "
+"instructions."
+msgstr ""
+"Yüksek Lisans beklenmedik bir yer tutucu döndürdü. Lütfen farklı "
+"talimatlarla tekrar deneyin."
+
+#: llm/static/js/modules/llm/editor.js:1883
+#: llm/static/js/modules/llm/editor.js:1994
+msgid "Comments are not available."
+msgstr "Yorumlar mevcut değil."
+
+#: llm/static/js/modules/llm/editor.js:1921
+msgid "DOCUMENT:"
+msgstr "BELGE:"
+
+#: llm/static/js/modules/llm/editor.js:1930
+msgid "FOOTNOTES:"
+msgstr "DİPNOTLAR:"
+
+#: llm/static/js/modules/llm/editor.js:1938
+msgid "BIBLIOGRAPHY:"
+msgstr "BİBLİYOGRAFYA:"
+
+#: llm/static/js/modules/llm/editor.js:1946
+msgid "Reading document..."
+msgstr "Belge okunuyor..."
+
+#: llm/static/js/modules/llm/editor.js:1949
+msgid "Sending document to LLM..."
+msgstr "Belge LLM'ye gönderiliyor..."
+
+#: llm/static/js/modules/llm/editor.js:1956
+msgid "Adding comment..."
+msgstr "Yorum ekleniyor..."
+
+#: llm/static/js/modules/llm/editor.js:1963
+msgid "LLM document comment added."
+msgstr "LLM belge yorumu eklendi."
+
+#: llm/static/js/modules/llm/editor.js:1967
+msgid ""
+"You are reviewing an entire document. Provide a comment about the document "
+"as a whole."
+msgstr ""
+"Bir belgenin tamamını inceliyorsunuz. Bir bütün olarak belge hakkında yorum "
+"yapın."
+
+#: llm/static/js/modules/llm/editor.js:1970
+msgid ""
+"Return ONLY your comment about the entire document. Do not include these "
+"instructions, the context, or any explanations. Do not rewrite the text."
+msgstr ""
+"YALNIZCA belgenin tamamı hakkındaki yorumunuzu geri gönderin. Bu "
+"talimatları, içeriği veya herhangi bir açıklamayı eklemeyin. Metni yeniden "
+"yazmayın."
+
+#: llm/static/js/modules/llm/editor.js:1973
+msgid "DOCUMENT TO REVIEW:"
+msgstr "İNCELENECEK BELGE:"
+
+#: llm/static/js/modules/llm/profile.js:67
+msgid "Please enter an API URL."
+msgstr "Lütfen bir API URL'si girin."
+
+#: llm/static/js/modules/llm/profile.js:71
+msgid "Please enter an API key."
+msgstr "Lütfen bir API anahtarı girin."
+
+#: llm/static/js/modules/llm/profile.js:75
+msgid "Fetching models..."
+msgstr "Modeller getiriliyor..."
+
+#: llm/static/js/modules/llm/profile.js:84
+#: llm/static/js/modules/llm/profile.js:102
+msgid "Could not fetch models."
+msgstr "Modeller getirilemedi."
+
+#: llm/static/js/modules/llm/profile.js:89
+msgid "No models found."
+msgstr "Hiçbir model bulunamadı."
+
+#: llm/static/js/modules/llm/profile.js:99
+msgid "Models loaded."
+msgstr "Modeller yüklendi."
+
+#: llm/static/js/modules/llm/profile.js:118
+msgid "Could not save LLM preferences"
+msgstr "Yüksek Lisans tercihleri ​​kaydedilemedi"
+
+#: llm/static/js/modules/llm/review_dialog.js:17
+msgid "Review LLM proposal"
+msgstr "Yüksek Lisans teklifini inceleyin"
+
+#: llm/static/js/modules/llm/review_dialog.js:25
+msgid "Apply directly"
+msgstr "Doğrudan başvur"
+
+#: llm/static/js/modules/llm/review_dialog.js:30
+msgid "Apply as tracked change"
+msgstr "İzlenen değişiklik olarak uygula"
+
+#: llm/static/js/modules/llm/review_dialog.js:35
+msgid "Ignore"
+msgstr "Görmezden gelmek"
+
+#: llm/static/js/modules/llm/templates.js:4
+msgid "citation"
+msgstr "Alıntı"
+
+#: llm/static/js/modules/llm/templates.js:5
+msgid "equation"
+msgstr "denklem"
+
+#: llm/static/js/modules/llm/templates.js:6
+msgid "cross-reference"
+msgstr "çapraz referans"
+
+#: llm/static/js/modules/llm/templates.js:7
+msgid "footnote"
+msgstr "dipnot"
+
+#: llm/static/js/modules/llm/templates.js:16
+msgid "non-text element"
+msgstr "metin dışı öğe"
+
+#: llm/static/js/modules/llm/templates.js:52
+msgid "Instructions"
+msgstr "Talimatlar"
+
+#: llm/static/js/modules/llm/templates.js:57
+msgid "e.g. Fix the grammar in this text"
+msgstr "örneğin Bu metindeki dilbilgisini düzeltin"
+
+#: llm/static/js/modules/llm/templates.js:62
+msgid "Output mode"
+msgstr "Çıkış modu"
+
+#: llm/static/js/modules/llm/templates.js:70
+msgid "Review proposed changed before applying (right-click)"
+msgstr "Uygulamadan önce önerilen değişiklikleri inceleyin (sağ tıklayın)"
+
+#: llm/static/js/modules/llm/templates.js:74
+msgid "Apply proposals directly to the document"
+msgstr "Teklifleri doğrudan belgeye uygulayın"
+
+#: llm/static/js/modules/llm/templates.js:78
+msgid "Apply proposals as tracked changes"
+msgstr "Teklifleri izlenen değişiklikler olarak uygula"
+
+#: llm/static/js/modules/llm/templates.js:82
+msgid "Add LLM suggestions as comments on the text"
+msgstr "LLM önerilerini metne yorum olarak ekleyin"
+
+#: llm/static/js/modules/llm/templates.js:86
+msgid "Add a single comment on the entire document"
+msgstr "Belgenin tamamına tek bir yorum ekleyin"
+
+#: llm/static/js/modules/llm/templates.js:93
+msgid "Quality checks"
+msgstr "Kalite kontrolleri"
+
+#: llm/static/js/modules/llm/templates.js:96
+msgid "LLM is expected to translate the text to another language"
+msgstr "LLM'nin metni başka bir dile çevirmesi bekleniyor"
+
+#: llm/static/js/modules/llm/templates.js:100
+msgid "Reject paragraphs/headings whose length differs by more than"
+msgstr ""
+"Uzunluğu birden fazla farklılık gösteren paragrafları/başlıkları reddet"
+
+#: llm/static/js/modules/llm/templates.js:102
+msgid "from the original"
+msgstr "orijinalden"
+
+#: llm/static/js/modules/llm/templates.js:106
+msgid "Require every paragraph/heading to be modified by the LLM"
+msgstr "Her paragrafın/başlığın LLM tarafından değiştirilmesini zorunlu kılın"
+
+#: llm/static/js/modules/llm/templates.js:110
+msgid "Reject paragraphs/headings where fewer than"
+msgstr "Şundan daha az olan paragrafları/başlıkları reddet"
+
+#: llm/static/js/modules/llm/templates.js:112
+msgid "of words differ from the original"
+msgstr "kelimelerin orijinalinden farklı olması"
+
+#: llm/static/js/modules/llm/templates.js:118
+msgid "Text to improve"
+msgstr "İyileştirilecek metin"
+
+#: llm/static/js/modules/llm/templates.js:134
+msgid "Original text"
+msgstr "Orijinal metin"
+
+#: llm/static/js/modules/llm/templates.js:146
+msgid "Proposed text by"
+msgstr "Önerilen metin"
+
+#: llm/static/js/modules/llm/templates.js:160
+msgid "LLM settings"
+msgstr "Yüksek Lisans ayarları"
+
+#: llm/static/js/modules/llm/templates.js:162
+msgid ""
+"Configure the API key, URL and model for your preferred LLM service. The URL"
+" should point to an OpenAI-compatible chat completions endpoint."
+msgstr ""
+"Tercih ettiğiniz LLM hizmeti için API anahtarını, URL'yi ve modeli "
+"yapılandırın. URL, OpenAI uyumlu bir sohbet tamamlama uç noktasına işaret "
+"etmelidir."
+
+#: llm/static/js/modules/llm/templates.js:164
+msgid "API URL"
+msgstr "API URL'si"
+
+#: llm/static/js/modules/llm/templates.js:168
+msgid "API key"
+msgstr "API anahtarı"
+
+#: llm/static/js/modules/llm/templates.js:169
+msgid "Using server-provided API key"
+msgstr "Sunucu tarafından sağlanan API anahtarını kullanma"
+
+#: llm/static/js/modules/llm/templates.js:169
+msgid "Your API key"
+msgstr "API anahtarınız"
+
+#: llm/static/js/modules/llm/templates.js:170
+msgid "Leave empty to use the API key provided by the server operator."
+msgstr ""
+"Sunucu operatörü tarafından sağlanan API anahtarını kullanmak için boş "
+"bırakın."
+
+#: llm/static/js/modules/llm/templates.js:174
+msgid "Fetch models"
+msgstr "Modelleri getir"
+
+#: llm/static/js/modules/llm/templates.js:179
+msgid "Model"
+msgstr "Modeli"
+
+#: llm/static/js/modules/llm/templates.js:181
+msgid "Fetch models first"
+msgstr "Önce modelleri getir"
+
+#: llm/static/js/modules/llm/templates.js:183
+msgid "Or enter model name manually"
+msgstr "Veya model adını manuel olarak girin"

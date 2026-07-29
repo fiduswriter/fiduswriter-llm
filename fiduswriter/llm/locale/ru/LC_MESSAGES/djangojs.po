@@ -1,0 +1,536 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Fidus Writer llm\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-07-23 08:19+0000\n"
+"Language: ru\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: POEditor.com\n"
+
+#: llm/static/js/modules/llm/dialog.js:16
+msgid "Improve text with LLM"
+msgstr "Улучшите текст с помощью LLM"
+
+#: llm/static/js/modules/llm/dialog.js:24
+msgid "Improve"
+msgstr "Улучшать"
+
+#: llm/static/js/modules/llm/dialog.js:114
+msgid "Please enter instructions."
+msgstr "Пожалуйста, введите инструкции."
+
+#: llm/static/js/modules/llm/dialog.js:137
+msgid "Please enter a valid maximum length difference percentage."
+msgstr "Введите действительный процент максимальной разницы в длине."
+
+#: llm/static/js/modules/llm/dialog.js:165
+msgid "Please enter a valid minimum word difference percentage."
+msgstr "Введите действительный минимальный процент разницы в словах."
+
+#: llm/static/js/modules/llm/editor.js:29
+msgid "title"
+msgstr "заголовок"
+
+#: llm/static/js/modules/llm/editor.js:30
+msgid "paragraph"
+msgstr "абзац"
+
+#: llm/static/js/modules/llm/editor.js:31
+#: llm/static/js/modules/llm/editor.js:32
+#: llm/static/js/modules/llm/editor.js:33
+#: llm/static/js/modules/llm/editor.js:34
+#: llm/static/js/modules/llm/editor.js:35
+#: llm/static/js/modules/llm/editor.js:36
+msgid "heading"
+msgstr "заголовок"
+
+#: llm/static/js/modules/llm/editor.js:37
+msgid "figure caption"
+msgstr "подпись к рисунку"
+
+#: llm/static/js/modules/llm/editor.js:38
+msgid "table caption"
+msgstr "заголовок таблицы"
+
+#: llm/static/js/modules/llm/editor.js:39
+msgid "code block"
+msgstr "блок кода"
+
+#: llm/static/js/modules/llm/editor.js:117
+msgid "LLM text improvement"
+msgstr "Улучшение текста LLM"
+
+#: llm/static/js/modules/llm/editor.js:124
+msgid "Improve entire text"
+msgstr "Улучшить весь текст"
+
+#: llm/static/js/modules/llm/editor.js:127
+msgid "Send the entire text to an LLM for improvement."
+msgstr "Отправьте весь текст в LLM для доработки."
+
+#: llm/static/js/modules/llm/editor.js:135
+msgid "Clear LLM proposals"
+msgstr "Четкие предложения LLM"
+
+#: llm/static/js/modules/llm/editor.js:138
+msgid "Remove any LLM change proposals from the document."
+msgstr "Удалите из документа все предложения по изменению LLM."
+
+#: llm/static/js/modules/llm/editor.js:146
+msgid "Highlight LLM additions"
+msgstr "Выделите дополнения LLM"
+
+#: llm/static/js/modules/llm/editor.js:149
+msgid "Highlight text that has been added by the LLM."
+msgstr "Выделите текст, добавленный LLM."
+
+#: llm/static/js/modules/llm/editor.js:168
+msgid "Improve with LLM"
+msgstr "Совершенствуйтесь с LLM"
+
+#: llm/static/js/modules/llm/editor.js:188
+msgid "No text found to improve."
+msgstr "Текст для улучшения не найден."
+
+#: llm/static/js/modules/llm/editor.js:243
+msgid "unknown model"
+msgstr "неизвестная модель"
+
+#: llm/static/js/modules/llm/editor.js:442
+msgid "Asking LLM for comments..."
+msgstr "Прошу LLM дать комментарии..."
+
+#: llm/static/js/modules/llm/editor.js:443
+msgid "Sending text to LLM..."
+msgstr "Отправка сообщения в LLM..."
+
+#: llm/static/js/modules/llm/editor.js:449
+msgid "Preparing..."
+msgstr "Подготовка..."
+
+#: llm/static/js/modules/llm/editor.js:474
+#: llm/static/js/modules/llm/editor.js:499
+#: llm/static/js/modules/llm/editor.js:554
+#, javascript-format
+msgid "Processing block %s of %s..."
+msgstr "Блок обработки %s из %s..."
+
+#: llm/static/js/modules/llm/editor.js:622
+#: llm/static/js/modules/llm/editor.js:1961
+msgid "Done"
+msgstr "Сделанный"
+
+#: llm/static/js/modules/llm/editor.js:627
+msgid "LLM comments added."
+msgstr "Добавлены комментарии LLM."
+
+#: llm/static/js/modules/llm/editor.js:631
+msgid "LLM proposals created. Right-click a highlighted passage to review."
+msgstr ""
+"Созданы предложения LLM. Щелкните правой кнопкой мыши выделенный отрывок, "
+"чтобы просмотреть."
+
+#: llm/static/js/modules/llm/editor.js:633
+msgid "No LLM change proposals were necessary."
+msgstr "Никаких предложений по изменению LLM не потребовалось."
+
+#: llm/static/js/modules/llm/editor.js:634
+msgid "LLM improvement applied."
+msgstr "Применено улучшение LLM."
+
+#: llm/static/js/modules/llm/editor.js:639
+msgid "LLM improvement cancelled."
+msgstr "Улучшение LLM отменено."
+
+#: llm/static/js/modules/llm/editor.js:643
+msgid "Could not apply LLM improvement."
+msgstr "Не удалось применить улучшение LLM."
+
+#: llm/static/js/modules/llm/editor.js:661
+msgid "text passage"
+msgstr "отрывок текста"
+
+#: llm/static/js/modules/llm/editor.js:666
+msgid "You are editing a"
+msgstr "Вы редактируете"
+
+#: llm/static/js/modules/llm/editor.js:668
+msgid ""
+"Keep it as a heading: concise, preferably not a full sentence, and suitable "
+"as a section title."
+msgstr ""
+"Сделайте заголовок: кратким, желательно не полным предложением, подходящим в"
+" качестве названия раздела."
+
+#: llm/static/js/modules/llm/editor.js:671
+msgid "Keep it as a document title: concise and not a full sentence."
+msgstr ""
+"Оставьте его как заголовок документа: краткий, а не полное предложение."
+
+#: llm/static/js/modules/llm/editor.js:674
+msgid ""
+"Only fix obvious typos or formatting issues in the code; do not change the "
+"logic."
+msgstr ""
+"Исправляйте только очевидные опечатки или проблемы с форматированием в коде;"
+" не меняйте логику."
+
+#: llm/static/js/modules/llm/editor.js:677
+msgid "Context before this passage:"
+msgstr "Контекст перед этим отрывком:"
+
+#: llm/static/js/modules/llm/editor.js:680
+msgid "Context after this passage:"
+msgstr "Контекст после этого отрывка:"
+
+#: llm/static/js/modules/llm/editor.js:684
+msgid "The text contains placeholders such as"
+msgstr "Текст содержит заполнители, такие как"
+
+#: llm/static/js/modules/llm/editor.js:684
+msgid ""
+"representing non-text elements (citations, equations, cross-references). You"
+" MUST preserve these placeholders exactly and in the same order. Do not "
+"modify them. Only improve the surrounding text."
+msgstr ""
+"представляющие нетекстовые элементы (цитаты, уравнения, перекрестные "
+"ссылки). Вы ДОЛЖНЫ сохранять эти заполнители точно и в том же порядке. Не "
+"изменяйте их. Улучшайте только окружающий текст."
+
+#: llm/static/js/modules/llm/editor.js:688
+msgid ""
+"The text also contains formatting markers such as "
+"[MARK:strong:0]...[/MARK:strong:0] for bold, [MARK:em:0]...[/MARK:em:0] for "
+"italic, [MARK:link:0]...[/MARK:link:0] for links, and "
+"[MARK:comment:0]...[/MARK:comment:0] for comments. You MUST preserve these "
+"markers exactly. Do not modify them."
+msgstr ""
+"Текст также содержит маркеры форматирования, такие как "
+"[MARK:strong:0]...[/MARK:strong:0] для жирного шрифта, "
+"[MARK:em:0]...[/MARK:em:0] для курсива, [MARK:link:0]...[/MARK:link:0] для "
+"ссылок и [MARK:comment:0]...[/MARK:comment:0] для комментариев. Вы ДОЛЖНЫ "
+"точно сохранить эти маркеры. Не изменяйте их."
+
+#: llm/static/js/modules/llm/editor.js:697
+msgid ""
+"Do not rewrite the text. Instead, briefly explain what could be improved "
+"about it. Respond with one or more short comments, one per line."
+msgstr ""
+"Не переписывайте текст. Вместо этого кратко объясните, что можно улучшить. "
+"Ответьте одним или несколькими короткими комментариями, по одному в строке."
+
+#: llm/static/js/modules/llm/editor.js:699
+#, javascript-format
+msgid ""
+"Translate every sentence to %s. Do not improve or rewrite the text in the "
+"original language."
+msgstr ""
+"Переведите каждое предложение на %s. Не улучшайте и не переписывайте текст "
+"на языке оригинала."
+
+#: llm/static/js/modules/llm/editor.js:705
+msgid ""
+"Return ONLY one or more short comments, one per line. Do not include these "
+"instructions, the context, or any explanations. Do not rewrite the text."
+msgstr ""
+"Возвращайте ТОЛЬКО один или несколько коротких комментариев, по одному в "
+"строке. Не включайте эти инструкции, контекст или какие-либо пояснения. Не "
+"переписывайте текст."
+
+#: llm/static/js/modules/llm/editor.js:711
+#, javascript-format
+msgid ""
+"Return ONLY the %s translation of the text below. Do not return any part of "
+"it in the original language or any other language. Do not include these "
+"instructions, the context, or any explanations. Do not quote the text. "
+"Preserve all placeholders exactly."
+msgstr ""
+"Возвращать ТОЛЬКО %s перевод текста ниже. Не возвращайте какую-либо его "
+"часть на языке оригинала или на любом другом языке. Не включайте эти "
+"инструкции, контекст или какие-либо пояснения. Не цитируйте текст. Точно "
+"сохраните все заполнители."
+
+#: llm/static/js/modules/llm/editor.js:717
+msgid ""
+"Return ONLY the translation of the text below in the language requested "
+"above. Do not return any part of it in the original language or any other "
+"language. Do not include these instructions, the context, or any "
+"explanations. Do not quote the text. Preserve all placeholders exactly."
+msgstr ""
+"Возвращайте ТОЛЬКО перевод текста ниже на запрошенный выше язык. Не "
+"возвращайте какую-либо его часть на языке оригинала или на любом другом "
+"языке. Не включайте эти инструкции, контекст или какие-либо пояснения. Не "
+"цитируйте текст. Точно сохраните все заполнители."
+
+#: llm/static/js/modules/llm/editor.js:722
+msgid ""
+"Return ONLY the improved version of the text below. If the text is already "
+"correct and needs no changes, return it exactly as provided. Do not include "
+"these instructions, the context, or any explanations in your response. Do "
+"not quote the text. Preserve all placeholders exactly."
+msgstr ""
+"Возвращайте ТОЛЬКО улучшенную версию текста ниже. Если текст уже правильный "
+"и не нуждается в изменениях, верните его в точности так, как указано. Не "
+"включайте в свой ответ эти инструкции, контекст или какие-либо пояснения. Не"
+" цитируйте текст. Точно сохраните все заполнители."
+
+#: llm/static/js/modules/llm/editor.js:726
+msgid "TEXT TO IMPROVE:"
+msgstr "ТЕКСТ ДЛЯ УЛУЧШЕНИЯ:"
+
+#: llm/static/js/modules/llm/editor.js:738
+#: llm/static/js/modules/llm/editor.js:1985
+msgid "LLM request failed."
+msgstr "Запрос LLM не выполнен."
+
+#: llm/static/js/modules/llm/editor.js:1497
+msgid ""
+"The LLM returned an unexpected placeholder. Please try again with different "
+"instructions."
+msgstr ""
+"LLM вернул неожиданный заполнитель. Пожалуйста, попробуйте еще раз с другими"
+" инструкциями."
+
+#: llm/static/js/modules/llm/editor.js:1883
+#: llm/static/js/modules/llm/editor.js:1994
+msgid "Comments are not available."
+msgstr "Комментарии недоступны."
+
+#: llm/static/js/modules/llm/editor.js:1921
+msgid "DOCUMENT:"
+msgstr "ДОКУМЕНТ:"
+
+#: llm/static/js/modules/llm/editor.js:1930
+msgid "FOOTNOTES:"
+msgstr "СНОСКИ:"
+
+#: llm/static/js/modules/llm/editor.js:1938
+msgid "BIBLIOGRAPHY:"
+msgstr "БИБЛИОГРАФИЯ:"
+
+#: llm/static/js/modules/llm/editor.js:1946
+msgid "Reading document..."
+msgstr "Чтение документа..."
+
+#: llm/static/js/modules/llm/editor.js:1949
+msgid "Sending document to LLM..."
+msgstr "Отправка документа в LLM..."
+
+#: llm/static/js/modules/llm/editor.js:1956
+msgid "Adding comment..."
+msgstr "Добавление комментария..."
+
+#: llm/static/js/modules/llm/editor.js:1963
+msgid "LLM document comment added."
+msgstr "Добавлен комментарий к документу LLM."
+
+#: llm/static/js/modules/llm/editor.js:1967
+msgid ""
+"You are reviewing an entire document. Provide a comment about the document "
+"as a whole."
+msgstr "Вы просматриваете весь документ. Прокомментируйте документ в целом."
+
+#: llm/static/js/modules/llm/editor.js:1970
+msgid ""
+"Return ONLY your comment about the entire document. Do not include these "
+"instructions, the context, or any explanations. Do not rewrite the text."
+msgstr ""
+"Возвращайте ТОЛЬКО ваш комментарий ко всему документу. Не включайте эти "
+"инструкции, контекст или какие-либо пояснения. Не переписывайте текст."
+
+#: llm/static/js/modules/llm/editor.js:1973
+msgid "DOCUMENT TO REVIEW:"
+msgstr "ДОКУМЕНТ ДЛЯ РАССМОТРЕНИЯ:"
+
+#: llm/static/js/modules/llm/profile.js:67
+msgid "Please enter an API URL."
+msgstr "Введите URL-адрес API."
+
+#: llm/static/js/modules/llm/profile.js:71
+msgid "Please enter an API key."
+msgstr "Пожалуйста, введите ключ API."
+
+#: llm/static/js/modules/llm/profile.js:75
+msgid "Fetching models..."
+msgstr "Загрузка моделей..."
+
+#: llm/static/js/modules/llm/profile.js:84
+#: llm/static/js/modules/llm/profile.js:102
+msgid "Could not fetch models."
+msgstr "Не удалось получить модели."
+
+#: llm/static/js/modules/llm/profile.js:89
+msgid "No models found."
+msgstr "Модели не найдены."
+
+#: llm/static/js/modules/llm/profile.js:99
+msgid "Models loaded."
+msgstr "Модели загружены."
+
+#: llm/static/js/modules/llm/profile.js:118
+msgid "Could not save LLM preferences"
+msgstr "Не удалось сохранить настройки LLM."
+
+#: llm/static/js/modules/llm/review_dialog.js:17
+msgid "Review LLM proposal"
+msgstr "Рассмотреть предложение LLM"
+
+#: llm/static/js/modules/llm/review_dialog.js:25
+msgid "Apply directly"
+msgstr "Подать заявку напрямую"
+
+#: llm/static/js/modules/llm/review_dialog.js:30
+msgid "Apply as tracked change"
+msgstr "Применить как отслеживаемое изменение"
+
+#: llm/static/js/modules/llm/review_dialog.js:35
+msgid "Ignore"
+msgstr "игнорировать"
+
+#: llm/static/js/modules/llm/templates.js:4
+msgid "citation"
+msgstr "цитирование"
+
+#: llm/static/js/modules/llm/templates.js:5
+msgid "equation"
+msgstr "уравнение"
+
+#: llm/static/js/modules/llm/templates.js:6
+msgid "cross-reference"
+msgstr "перекрестная ссылка"
+
+#: llm/static/js/modules/llm/templates.js:7
+msgid "footnote"
+msgstr "сноска"
+
+#: llm/static/js/modules/llm/templates.js:16
+msgid "non-text element"
+msgstr "нетекстовый элемент"
+
+#: llm/static/js/modules/llm/templates.js:52
+msgid "Instructions"
+msgstr "Инструкции"
+
+#: llm/static/js/modules/llm/templates.js:57
+msgid "e.g. Fix the grammar in this text"
+msgstr "например Исправьте грамматику в этом тексте"
+
+#: llm/static/js/modules/llm/templates.js:62
+msgid "Output mode"
+msgstr "Режим вывода"
+
+#: llm/static/js/modules/llm/templates.js:70
+msgid "Review proposed changed before applying (right-click)"
+msgstr ""
+"Просмотрите предлагаемые изменения перед подачей заявки (щелкните правой "
+"кнопкой мыши)"
+
+#: llm/static/js/modules/llm/templates.js:74
+msgid "Apply proposals directly to the document"
+msgstr "Применяйте предложения непосредственно к документу"
+
+#: llm/static/js/modules/llm/templates.js:78
+msgid "Apply proposals as tracked changes"
+msgstr "Применять предложения как отслеживаемые изменения"
+
+#: llm/static/js/modules/llm/templates.js:82
+msgid "Add LLM suggestions as comments on the text"
+msgstr "Добавьте предложения LLM в виде комментариев к тексту."
+
+#: llm/static/js/modules/llm/templates.js:86
+msgid "Add a single comment on the entire document"
+msgstr "Добавьте один комментарий ко всему документу"
+
+#: llm/static/js/modules/llm/templates.js:93
+msgid "Quality checks"
+msgstr "Проверка качества"
+
+#: llm/static/js/modules/llm/templates.js:96
+msgid "LLM is expected to translate the text to another language"
+msgstr "Ожидается, что LLM переведет текст на другой язык."
+
+#: llm/static/js/modules/llm/templates.js:100
+msgid "Reject paragraphs/headings whose length differs by more than"
+msgstr "Отклонять абзацы/заголовки, длина которых отличается более чем"
+
+#: llm/static/js/modules/llm/templates.js:102
+msgid "from the original"
+msgstr "из оригинала"
+
+#: llm/static/js/modules/llm/templates.js:106
+msgid "Require every paragraph/heading to be modified by the LLM"
+msgstr "Требовать, чтобы каждый абзац/заголовок был изменен LLM"
+
+#: llm/static/js/modules/llm/templates.js:110
+msgid "Reject paragraphs/headings where fewer than"
+msgstr "Отклонять абзацы/заголовки, в которых меньше"
+
+#: llm/static/js/modules/llm/templates.js:112
+msgid "of words differ from the original"
+msgstr "слов отличаются от оригинала"
+
+#: llm/static/js/modules/llm/templates.js:118
+msgid "Text to improve"
+msgstr "Текст для улучшения"
+
+#: llm/static/js/modules/llm/templates.js:134
+msgid "Original text"
+msgstr "Исходный текст"
+
+#: llm/static/js/modules/llm/templates.js:146
+msgid "Proposed text by"
+msgstr "Предлагаемый текст"
+
+#: llm/static/js/modules/llm/templates.js:160
+msgid "LLM settings"
+msgstr "Настройки LLM"
+
+#: llm/static/js/modules/llm/templates.js:162
+msgid ""
+"Configure the API key, URL and model for your preferred LLM service. The URL"
+" should point to an OpenAI-compatible chat completions endpoint."
+msgstr ""
+"Настройте ключ API, URL-адрес и модель для предпочитаемой вами службы LLM. "
+"URL-адрес должен указывать на конечную точку завершения чата, совместимую с "
+"OpenAI."
+
+#: llm/static/js/modules/llm/templates.js:164
+msgid "API URL"
+msgstr "URL-адрес API"
+
+#: llm/static/js/modules/llm/templates.js:168
+msgid "API key"
+msgstr "API-ключ"
+
+#: llm/static/js/modules/llm/templates.js:169
+msgid "Using server-provided API key"
+msgstr "Использование ключа API, предоставленного сервером"
+
+#: llm/static/js/modules/llm/templates.js:169
+msgid "Your API key"
+msgstr "Ваш API-ключ"
+
+#: llm/static/js/modules/llm/templates.js:170
+msgid "Leave empty to use the API key provided by the server operator."
+msgstr ""
+"Оставьте пустым, чтобы использовать ключ API, предоставленный оператором "
+"сервера."
+
+#: llm/static/js/modules/llm/templates.js:174
+msgid "Fetch models"
+msgstr "Получить модели"
+
+#: llm/static/js/modules/llm/templates.js:179
+msgid "Model"
+msgstr "Модель"
+
+#: llm/static/js/modules/llm/templates.js:181
+msgid "Fetch models first"
+msgstr "Сначала выберите модели"
+
+#: llm/static/js/modules/llm/templates.js:183
+msgid "Or enter model name manually"
+msgstr "Или введите название модели вручную"

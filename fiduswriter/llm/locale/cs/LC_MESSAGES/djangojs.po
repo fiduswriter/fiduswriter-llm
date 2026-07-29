@@ -1,0 +1,530 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Fidus Writer llm\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-07-23 08:19+0000\n"
+"Language: cs\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: POEditor.com\n"
+
+#: llm/static/js/modules/llm/dialog.js:16
+msgid "Improve text with LLM"
+msgstr "Vylepšete text pomocí LLM"
+
+#: llm/static/js/modules/llm/dialog.js:24
+msgid "Improve"
+msgstr "zlepšit"
+
+#: llm/static/js/modules/llm/dialog.js:114
+msgid "Please enter instructions."
+msgstr "Zadejte prosím pokyny."
+
+#: llm/static/js/modules/llm/dialog.js:137
+msgid "Please enter a valid maximum length difference percentage."
+msgstr "Zadejte prosím platné procento rozdílu maximální délky."
+
+#: llm/static/js/modules/llm/dialog.js:165
+msgid "Please enter a valid minimum word difference percentage."
+msgstr "Zadejte prosím platné minimální procento rozdílu slov."
+
+#: llm/static/js/modules/llm/editor.js:29
+msgid "title"
+msgstr "titul"
+
+#: llm/static/js/modules/llm/editor.js:30
+msgid "paragraph"
+msgstr "odstavec"
+
+#: llm/static/js/modules/llm/editor.js:31
+#: llm/static/js/modules/llm/editor.js:32
+#: llm/static/js/modules/llm/editor.js:33
+#: llm/static/js/modules/llm/editor.js:34
+#: llm/static/js/modules/llm/editor.js:35
+#: llm/static/js/modules/llm/editor.js:36
+msgid "heading"
+msgstr "záhlaví"
+
+#: llm/static/js/modules/llm/editor.js:37
+msgid "figure caption"
+msgstr "popis obrázku"
+
+#: llm/static/js/modules/llm/editor.js:38
+msgid "table caption"
+msgstr "popisek tabulky"
+
+#: llm/static/js/modules/llm/editor.js:39
+msgid "code block"
+msgstr "blok kódu"
+
+#: llm/static/js/modules/llm/editor.js:117
+msgid "LLM text improvement"
+msgstr "Zlepšení textu LLM"
+
+#: llm/static/js/modules/llm/editor.js:124
+msgid "Improve entire text"
+msgstr "Vylepšete celý text"
+
+#: llm/static/js/modules/llm/editor.js:127
+msgid "Send the entire text to an LLM for improvement."
+msgstr "Odešlete celý text do LLM ke zlepšení."
+
+#: llm/static/js/modules/llm/editor.js:135
+msgid "Clear LLM proposals"
+msgstr "Jasné návrhy LLM"
+
+#: llm/static/js/modules/llm/editor.js:138
+msgid "Remove any LLM change proposals from the document."
+msgstr "Odstraňte z dokumentu všechny návrhy změn LLM."
+
+#: llm/static/js/modules/llm/editor.js:146
+msgid "Highlight LLM additions"
+msgstr "Zvýrazněte doplňky LLM"
+
+#: llm/static/js/modules/llm/editor.js:149
+msgid "Highlight text that has been added by the LLM."
+msgstr "Zvýrazněte text, který byl přidán LLM."
+
+#: llm/static/js/modules/llm/editor.js:168
+msgid "Improve with LLM"
+msgstr "Zlepšete se s LLM"
+
+#: llm/static/js/modules/llm/editor.js:188
+msgid "No text found to improve."
+msgstr "Nebyl nalezen žádný text ke zlepšení."
+
+#: llm/static/js/modules/llm/editor.js:243
+msgid "unknown model"
+msgstr "neznámý model"
+
+#: llm/static/js/modules/llm/editor.js:442
+msgid "Asking LLM for comments..."
+msgstr "Žádám LLM o komentáře..."
+
+#: llm/static/js/modules/llm/editor.js:443
+msgid "Sending text to LLM..."
+msgstr "Odesílání SMS do LLM..."
+
+#: llm/static/js/modules/llm/editor.js:449
+msgid "Preparing..."
+msgstr "Příprava..."
+
+#: llm/static/js/modules/llm/editor.js:474
+#: llm/static/js/modules/llm/editor.js:499
+#: llm/static/js/modules/llm/editor.js:554
+#, javascript-format
+msgid "Processing block %s of %s..."
+msgstr "Zpracovává se blok %s z %s..."
+
+#: llm/static/js/modules/llm/editor.js:622
+#: llm/static/js/modules/llm/editor.js:1961
+msgid "Done"
+msgstr "Hotovo"
+
+#: llm/static/js/modules/llm/editor.js:627
+msgid "LLM comments added."
+msgstr "Přidány komentáře LLM."
+
+#: llm/static/js/modules/llm/editor.js:631
+msgid "LLM proposals created. Right-click a highlighted passage to review."
+msgstr ""
+"Návrhy LLM vytvořeny. Klikněte pravým tlačítkem na zvýrazněnou pasáž, kterou"
+" chcete zkontrolovat."
+
+#: llm/static/js/modules/llm/editor.js:633
+msgid "No LLM change proposals were necessary."
+msgstr "Nebyly nutné žádné návrhy na změnu LLM."
+
+#: llm/static/js/modules/llm/editor.js:634
+msgid "LLM improvement applied."
+msgstr "Bylo použito vylepšení LLM."
+
+#: llm/static/js/modules/llm/editor.js:639
+msgid "LLM improvement cancelled."
+msgstr "Zlepšení LLM zrušeno."
+
+#: llm/static/js/modules/llm/editor.js:643
+msgid "Could not apply LLM improvement."
+msgstr "Zlepšení LLM nelze použít."
+
+#: llm/static/js/modules/llm/editor.js:661
+msgid "text passage"
+msgstr "textová pasáž"
+
+#: llm/static/js/modules/llm/editor.js:666
+msgid "You are editing a"
+msgstr "Upravujete a"
+
+#: llm/static/js/modules/llm/editor.js:668
+msgid ""
+"Keep it as a heading: concise, preferably not a full sentence, and suitable "
+"as a section title."
+msgstr ""
+"Zachovejte to jako nadpis: stručné, nejlépe ne celou větu a vhodné jako "
+"nadpis oddílu."
+
+#: llm/static/js/modules/llm/editor.js:671
+msgid "Keep it as a document title: concise and not a full sentence."
+msgstr "Ponechte to jako název dokumentu: stručné a ne celou větu."
+
+#: llm/static/js/modules/llm/editor.js:674
+msgid ""
+"Only fix obvious typos or formatting issues in the code; do not change the "
+"logic."
+msgstr ""
+"Opravte pouze zjevné překlepy nebo problémy s formátováním v kódu; neměňte "
+"logiku."
+
+#: llm/static/js/modules/llm/editor.js:677
+msgid "Context before this passage:"
+msgstr "Kontext před touto pasáží:"
+
+#: llm/static/js/modules/llm/editor.js:680
+msgid "Context after this passage:"
+msgstr "Kontext po této pasáži:"
+
+#: llm/static/js/modules/llm/editor.js:684
+msgid "The text contains placeholders such as"
+msgstr "Text obsahuje zástupné symboly jako např"
+
+#: llm/static/js/modules/llm/editor.js:684
+msgid ""
+"representing non-text elements (citations, equations, cross-references). You"
+" MUST preserve these placeholders exactly and in the same order. Do not "
+"modify them. Only improve the surrounding text."
+msgstr ""
+"reprezentující netextové prvky (citace, rovnice, křížové odkazy). Tyto "
+"zástupné symboly MUSÍTE zachovat přesně a ve stejném pořadí. Neupravujte je."
+" Vylepšete pouze okolní text."
+
+#: llm/static/js/modules/llm/editor.js:688
+msgid ""
+"The text also contains formatting markers such as "
+"[MARK:strong:0]...[/MARK:strong:0] for bold, [MARK:em:0]...[/MARK:em:0] for "
+"italic, [MARK:link:0]...[/MARK:link:0] for links, and "
+"[MARK:comment:0]...[/MARK:comment:0] for comments. You MUST preserve these "
+"markers exactly. Do not modify them."
+msgstr ""
+"Text také obsahuje formátovací značky jako "
+"[MARK:strong:0]...[/MARK:strong:0] pro tučné písmo, "
+"[MARK:em:0]...[/MARK:em:0] pro kurzívu, [MARK:link:0]...[/MARK:link:0] pro "
+"odkazy a [MARK:comment:0]...[/MARK:comment:0] pro komentáře. Tyto značky "
+"MUSÍTE přesně zachovat. Neupravujte je."
+
+#: llm/static/js/modules/llm/editor.js:697
+msgid ""
+"Do not rewrite the text. Instead, briefly explain what could be improved "
+"about it. Respond with one or more short comments, one per line."
+msgstr ""
+"Text nepřepisujte. Místo toho stručně vysvětlete, co by se na něm dalo "
+"zlepšit. Odpovězte jedním nebo více krátkými komentáři, jeden na řádek."
+
+#: llm/static/js/modules/llm/editor.js:699
+#, javascript-format
+msgid ""
+"Translate every sentence to %s. Do not improve or rewrite the text in the "
+"original language."
+msgstr ""
+"Přeložte každou větu do %s. Nevylepšujte ani nepřepisujte text v původním "
+"jazyce."
+
+#: llm/static/js/modules/llm/editor.js:705
+msgid ""
+"Return ONLY one or more short comments, one per line. Do not include these "
+"instructions, the context, or any explanations. Do not rewrite the text."
+msgstr ""
+"Vraťte POUZE jeden nebo více krátkých komentářů, jeden na řádek. Nezahrnujte"
+" tyto pokyny, kontext ani žádná vysvětlení. Text nepřepisujte."
+
+#: llm/static/js/modules/llm/editor.js:711
+#, javascript-format
+msgid ""
+"Return ONLY the %s translation of the text below. Do not return any part of "
+"it in the original language or any other language. Do not include these "
+"instructions, the context, or any explanations. Do not quote the text. "
+"Preserve all placeholders exactly."
+msgstr ""
+"Vraťte POUZE %s překlad textu níže. Nevracejte žádnou jeho část v původním "
+"nebo jiném jazyce. Nezahrnujte tyto pokyny, kontext ani žádná vysvětlení. "
+"Text necitujte. Zachovejte přesně všechny zástupné symboly."
+
+#: llm/static/js/modules/llm/editor.js:717
+msgid ""
+"Return ONLY the translation of the text below in the language requested "
+"above. Do not return any part of it in the original language or any other "
+"language. Do not include these instructions, the context, or any "
+"explanations. Do not quote the text. Preserve all placeholders exactly."
+msgstr ""
+"Vraťte POUZE překlad níže uvedeného textu ve výše požadovaném jazyce. "
+"Nevracejte žádnou jeho část v původním nebo jiném jazyce. Nezahrnujte tyto "
+"pokyny, kontext ani žádná vysvětlení. Text necitujte. Zachovejte přesně "
+"všechny zástupné symboly."
+
+#: llm/static/js/modules/llm/editor.js:722
+msgid ""
+"Return ONLY the improved version of the text below. If the text is already "
+"correct and needs no changes, return it exactly as provided. Do not include "
+"these instructions, the context, or any explanations in your response. Do "
+"not quote the text. Preserve all placeholders exactly."
+msgstr ""
+"Vraťte POUZE vylepšenou verzi níže uvedeného textu. Pokud je text již "
+"správný a nepotřebuje žádné změny, vraťte jej přesně tak, jak je uvedeno. Do"
+" své odpovědi nezahrnujte tyto pokyny, kontext ani žádná vysvětlení. Text "
+"necitujte. Zachovejte přesně všechny zástupné symboly."
+
+#: llm/static/js/modules/llm/editor.js:726
+msgid "TEXT TO IMPROVE:"
+msgstr "TEXT PRO VYLEPŠENÍ:"
+
+#: llm/static/js/modules/llm/editor.js:738
+#: llm/static/js/modules/llm/editor.js:1985
+msgid "LLM request failed."
+msgstr "Požadavek LLM se nezdařil."
+
+#: llm/static/js/modules/llm/editor.js:1497
+msgid ""
+"The LLM returned an unexpected placeholder. Please try again with different "
+"instructions."
+msgstr ""
+"LLM vrátil neočekávaný zástupný symbol. Zkuste to znovu s jinými pokyny."
+
+#: llm/static/js/modules/llm/editor.js:1883
+#: llm/static/js/modules/llm/editor.js:1994
+msgid "Comments are not available."
+msgstr "Komentáře nejsou k dispozici."
+
+#: llm/static/js/modules/llm/editor.js:1921
+msgid "DOCUMENT:"
+msgstr "DOKUMENT:"
+
+#: llm/static/js/modules/llm/editor.js:1930
+msgid "FOOTNOTES:"
+msgstr "POZNÁMKY:"
+
+#: llm/static/js/modules/llm/editor.js:1938
+msgid "BIBLIOGRAPHY:"
+msgstr "BIBLIOGRAFIE:"
+
+#: llm/static/js/modules/llm/editor.js:1946
+msgid "Reading document..."
+msgstr "Čtení dokumentu..."
+
+#: llm/static/js/modules/llm/editor.js:1949
+msgid "Sending document to LLM..."
+msgstr "Odesílání dokumentu do LLM..."
+
+#: llm/static/js/modules/llm/editor.js:1956
+msgid "Adding comment..."
+msgstr "Přidávání komentáře..."
+
+#: llm/static/js/modules/llm/editor.js:1963
+msgid "LLM document comment added."
+msgstr "Přidán komentář k dokumentu LLM."
+
+#: llm/static/js/modules/llm/editor.js:1967
+msgid ""
+"You are reviewing an entire document. Provide a comment about the document "
+"as a whole."
+msgstr "Prohlížíte si celý dokument. Uveďte komentář k dokumentu jako celku."
+
+#: llm/static/js/modules/llm/editor.js:1970
+msgid ""
+"Return ONLY your comment about the entire document. Do not include these "
+"instructions, the context, or any explanations. Do not rewrite the text."
+msgstr ""
+"Vraťte POUZE svůj komentář k celému dokumentu. Nezahrnujte tyto pokyny, "
+"kontext ani žádná vysvětlení. Text nepřepisujte."
+
+#: llm/static/js/modules/llm/editor.js:1973
+msgid "DOCUMENT TO REVIEW:"
+msgstr "DOKUMENT KE KONTROLU:"
+
+#: llm/static/js/modules/llm/profile.js:67
+msgid "Please enter an API URL."
+msgstr "Zadejte adresu URL rozhraní API."
+
+#: llm/static/js/modules/llm/profile.js:71
+msgid "Please enter an API key."
+msgstr "Zadejte klíč API."
+
+#: llm/static/js/modules/llm/profile.js:75
+msgid "Fetching models..."
+msgstr "Načítání modelů..."
+
+#: llm/static/js/modules/llm/profile.js:84
+#: llm/static/js/modules/llm/profile.js:102
+msgid "Could not fetch models."
+msgstr "Modely se nepodařilo načíst."
+
+#: llm/static/js/modules/llm/profile.js:89
+msgid "No models found."
+msgstr "Nebyly nalezeny žádné modely."
+
+#: llm/static/js/modules/llm/profile.js:99
+msgid "Models loaded."
+msgstr "Modely načteny."
+
+#: llm/static/js/modules/llm/profile.js:118
+msgid "Could not save LLM preferences"
+msgstr "Předvolby LLM nelze uložit"
+
+#: llm/static/js/modules/llm/review_dialog.js:17
+msgid "Review LLM proposal"
+msgstr "Zkontrolujte návrh LLM"
+
+#: llm/static/js/modules/llm/review_dialog.js:25
+msgid "Apply directly"
+msgstr "Aplikujte přímo"
+
+#: llm/static/js/modules/llm/review_dialog.js:30
+msgid "Apply as tracked change"
+msgstr "Použít jako sledovanou změnu"
+
+#: llm/static/js/modules/llm/review_dialog.js:35
+msgid "Ignore"
+msgstr "Ignorovat"
+
+#: llm/static/js/modules/llm/templates.js:4
+msgid "citation"
+msgstr "citace"
+
+#: llm/static/js/modules/llm/templates.js:5
+msgid "equation"
+msgstr "rovnice"
+
+#: llm/static/js/modules/llm/templates.js:6
+msgid "cross-reference"
+msgstr "křížový odkaz"
+
+#: llm/static/js/modules/llm/templates.js:7
+msgid "footnote"
+msgstr "poznámka pod čarou"
+
+#: llm/static/js/modules/llm/templates.js:16
+msgid "non-text element"
+msgstr "netextový prvek"
+
+#: llm/static/js/modules/llm/templates.js:52
+msgid "Instructions"
+msgstr "Instrukce"
+
+#: llm/static/js/modules/llm/templates.js:57
+msgid "e.g. Fix the grammar in this text"
+msgstr "např. Opravte gramatiku v tomto textu"
+
+#: llm/static/js/modules/llm/templates.js:62
+msgid "Output mode"
+msgstr "Výstupní režim"
+
+#: llm/static/js/modules/llm/templates.js:70
+msgid "Review proposed changed before applying (right-click)"
+msgstr ""
+"Před podáním žádosti zkontrolujte navržené změny (klikněte pravým tlačítkem)"
+
+#: llm/static/js/modules/llm/templates.js:74
+msgid "Apply proposals directly to the document"
+msgstr "Aplikujte návrhy přímo na dokument"
+
+#: llm/static/js/modules/llm/templates.js:78
+msgid "Apply proposals as tracked changes"
+msgstr "Použít návrhy jako sledované změny"
+
+#: llm/static/js/modules/llm/templates.js:82
+msgid "Add LLM suggestions as comments on the text"
+msgstr "Přidejte návrhy LLM jako komentáře k textu"
+
+#: llm/static/js/modules/llm/templates.js:86
+msgid "Add a single comment on the entire document"
+msgstr "Přidejte jeden komentář k celému dokumentu"
+
+#: llm/static/js/modules/llm/templates.js:93
+msgid "Quality checks"
+msgstr "Kontroly kvality"
+
+#: llm/static/js/modules/llm/templates.js:96
+msgid "LLM is expected to translate the text to another language"
+msgstr "Očekává se, že LLM přeloží text do jiného jazyka"
+
+#: llm/static/js/modules/llm/templates.js:100
+msgid "Reject paragraphs/headings whose length differs by more than"
+msgstr "Odmítněte odstavce/nadpisy, jejichž délka se liší o více než"
+
+#: llm/static/js/modules/llm/templates.js:102
+msgid "from the original"
+msgstr "z originálu"
+
+#: llm/static/js/modules/llm/templates.js:106
+msgid "Require every paragraph/heading to be modified by the LLM"
+msgstr "Vyžadovat úpravu každého odstavce/nadpisu LLM"
+
+#: llm/static/js/modules/llm/templates.js:110
+msgid "Reject paragraphs/headings where fewer than"
+msgstr "Odmítněte odstavce/nadpisy, kde je méně než"
+
+#: llm/static/js/modules/llm/templates.js:112
+msgid "of words differ from the original"
+msgstr "slov se liší od originálu"
+
+#: llm/static/js/modules/llm/templates.js:118
+msgid "Text to improve"
+msgstr "Text ke zlepšení"
+
+#: llm/static/js/modules/llm/templates.js:134
+msgid "Original text"
+msgstr "Původní text"
+
+#: llm/static/js/modules/llm/templates.js:146
+msgid "Proposed text by"
+msgstr "Navrhovaný text od"
+
+#: llm/static/js/modules/llm/templates.js:160
+msgid "LLM settings"
+msgstr "nastavení LLM"
+
+#: llm/static/js/modules/llm/templates.js:162
+msgid ""
+"Configure the API key, URL and model for your preferred LLM service. The URL"
+" should point to an OpenAI-compatible chat completions endpoint."
+msgstr ""
+"Nakonfigurujte klíč API, adresu URL a model pro vaši preferovanou službu "
+"LLM. Adresa URL by měla ukazovat na koncový bod dokončení chatu kompatibilní"
+" s OpenAI."
+
+#: llm/static/js/modules/llm/templates.js:164
+msgid "API URL"
+msgstr "URL rozhraní API"
+
+#: llm/static/js/modules/llm/templates.js:168
+msgid "API key"
+msgstr "API klíč"
+
+#: llm/static/js/modules/llm/templates.js:169
+msgid "Using server-provided API key"
+msgstr "Pomocí klíče API poskytnutého serverem"
+
+#: llm/static/js/modules/llm/templates.js:169
+msgid "Your API key"
+msgstr "Váš klíč API"
+
+#: llm/static/js/modules/llm/templates.js:170
+msgid "Leave empty to use the API key provided by the server operator."
+msgstr ""
+"Chcete-li použít klíč API poskytnutý operátorem serveru, ponechte prázdné."
+
+#: llm/static/js/modules/llm/templates.js:174
+msgid "Fetch models"
+msgstr "Vyzvedněte modely"
+
+#: llm/static/js/modules/llm/templates.js:179
+msgid "Model"
+msgstr "Model"
+
+#: llm/static/js/modules/llm/templates.js:181
+msgid "Fetch models first"
+msgstr "Nejprve načtěte modely"
+
+#: llm/static/js/modules/llm/templates.js:183
+msgid "Or enter model name manually"
+msgstr "Nebo zadejte název modelu ručně"

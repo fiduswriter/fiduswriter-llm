@@ -1,0 +1,497 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Fidus Writer llm\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-07-23 08:19+0000\n"
+"Language: zh_Hans\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: POEditor.com\n"
+
+#: llm/static/js/modules/llm/dialog.js:16
+msgid "Improve text with LLM"
+msgstr "通过法学硕士改进文本"
+
+#: llm/static/js/modules/llm/dialog.js:24
+msgid "Improve"
+msgstr "提升"
+
+#: llm/static/js/modules/llm/dialog.js:114
+msgid "Please enter instructions."
+msgstr "请输入说明。"
+
+#: llm/static/js/modules/llm/dialog.js:137
+msgid "Please enter a valid maximum length difference percentage."
+msgstr "请输入有效的最大长度差异百分比。"
+
+#: llm/static/js/modules/llm/dialog.js:165
+msgid "Please enter a valid minimum word difference percentage."
+msgstr "请输入有效的最小字数差异百分比。"
+
+#: llm/static/js/modules/llm/editor.js:29
+msgid "title"
+msgstr "标题"
+
+#: llm/static/js/modules/llm/editor.js:30
+msgid "paragraph"
+msgstr "段落"
+
+#: llm/static/js/modules/llm/editor.js:31
+#: llm/static/js/modules/llm/editor.js:32
+#: llm/static/js/modules/llm/editor.js:33
+#: llm/static/js/modules/llm/editor.js:34
+#: llm/static/js/modules/llm/editor.js:35
+#: llm/static/js/modules/llm/editor.js:36
+msgid "heading"
+msgstr "标题"
+
+#: llm/static/js/modules/llm/editor.js:37
+msgid "figure caption"
+msgstr "图标题"
+
+#: llm/static/js/modules/llm/editor.js:38
+msgid "table caption"
+msgstr "表格标题"
+
+#: llm/static/js/modules/llm/editor.js:39
+msgid "code block"
+msgstr "代码块"
+
+#: llm/static/js/modules/llm/editor.js:117
+msgid "LLM text improvement"
+msgstr "LLM文本改进"
+
+#: llm/static/js/modules/llm/editor.js:124
+msgid "Improve entire text"
+msgstr "改进整个文本"
+
+#: llm/static/js/modules/llm/editor.js:127
+msgid "Send the entire text to an LLM for improvement."
+msgstr "将整个文本发送给法学硕士进行改进。"
+
+#: llm/static/js/modules/llm/editor.js:135
+msgid "Clear LLM proposals"
+msgstr "明确的LLM提案"
+
+#: llm/static/js/modules/llm/editor.js:138
+msgid "Remove any LLM change proposals from the document."
+msgstr "从文档中删除任何 LLM 变更提案。"
+
+#: llm/static/js/modules/llm/editor.js:146
+msgid "Highlight LLM additions"
+msgstr "突出显示法学硕士新增内容"
+
+#: llm/static/js/modules/llm/editor.js:149
+msgid "Highlight text that has been added by the LLM."
+msgstr "突出显示法学硕士添加的文本。"
+
+#: llm/static/js/modules/llm/editor.js:168
+msgid "Improve with LLM"
+msgstr "通过法学硕士提高"
+
+#: llm/static/js/modules/llm/editor.js:188
+msgid "No text found to improve."
+msgstr "没有发现可以改进的文本。"
+
+#: llm/static/js/modules/llm/editor.js:243
+msgid "unknown model"
+msgstr "未知型号"
+
+#: llm/static/js/modules/llm/editor.js:442
+msgid "Asking LLM for comments..."
+msgstr "向LLM征求意见..."
+
+#: llm/static/js/modules/llm/editor.js:443
+msgid "Sending text to LLM..."
+msgstr "正在向 LLM 发送文本..."
+
+#: llm/static/js/modules/llm/editor.js:449
+msgid "Preparing..."
+msgstr "正在准备..."
+
+#: llm/static/js/modules/llm/editor.js:474
+#: llm/static/js/modules/llm/editor.js:499
+#: llm/static/js/modules/llm/editor.js:554
+#, javascript-format
+msgid "Processing block %s of %s..."
+msgstr "正在处理 %s 的块 %s..."
+
+#: llm/static/js/modules/llm/editor.js:622
+#: llm/static/js/modules/llm/editor.js:1961
+msgid "Done"
+msgstr "完毕"
+
+#: llm/static/js/modules/llm/editor.js:627
+msgid "LLM comments added."
+msgstr "添加了 LLM 评论。"
+
+#: llm/static/js/modules/llm/editor.js:631
+msgid "LLM proposals created. Right-click a highlighted passage to review."
+msgstr "创建了 LLM 提案。右键单击突出显示的段落进行审阅。"
+
+#: llm/static/js/modules/llm/editor.js:633
+msgid "No LLM change proposals were necessary."
+msgstr "不需要法学硕士变更提案。"
+
+#: llm/static/js/modules/llm/editor.js:634
+msgid "LLM improvement applied."
+msgstr "应用法学硕士改进。"
+
+#: llm/static/js/modules/llm/editor.js:639
+msgid "LLM improvement cancelled."
+msgstr "LLM 改进取消。"
+
+#: llm/static/js/modules/llm/editor.js:643
+msgid "Could not apply LLM improvement."
+msgstr "无法应用 LLM 改进。"
+
+#: llm/static/js/modules/llm/editor.js:661
+msgid "text passage"
+msgstr "文字段落"
+
+#: llm/static/js/modules/llm/editor.js:666
+msgid "You are editing a"
+msgstr "您正在编辑一个"
+
+#: llm/static/js/modules/llm/editor.js:668
+msgid ""
+"Keep it as a heading: concise, preferably not a full sentence, and suitable "
+"as a section title."
+msgstr "将其作为标题：简洁，最好不是完整的句子，适合作为章节标题。"
+
+#: llm/static/js/modules/llm/editor.js:671
+msgid "Keep it as a document title: concise and not a full sentence."
+msgstr "将其保留为文档标题：简洁而不是完整的句子。"
+
+#: llm/static/js/modules/llm/editor.js:674
+msgid ""
+"Only fix obvious typos or formatting issues in the code; do not change the "
+"logic."
+msgstr "仅修复代码中明显的拼写错误或格式问题；不要改变逻辑。"
+
+#: llm/static/js/modules/llm/editor.js:677
+msgid "Context before this passage:"
+msgstr "这段话之前的上下文："
+
+#: llm/static/js/modules/llm/editor.js:680
+msgid "Context after this passage:"
+msgstr "这段话之后的上下文："
+
+#: llm/static/js/modules/llm/editor.js:684
+msgid "The text contains placeholders such as"
+msgstr "文本包含占位符，例如"
+
+#: llm/static/js/modules/llm/editor.js:684
+msgid ""
+"representing non-text elements (citations, equations, cross-references). You"
+" MUST preserve these placeholders exactly and in the same order. Do not "
+"modify them. Only improve the surrounding text."
+msgstr "表示非文本元素（引文、方程式、交叉引用）。您必须以相同的顺序准确保留这些占位符。不要修改它们。仅改进周围的文字。"
+
+#: llm/static/js/modules/llm/editor.js:688
+msgid ""
+"The text also contains formatting markers such as "
+"[MARK:strong:0]...[/MARK:strong:0] for bold, [MARK:em:0]...[/MARK:em:0] for "
+"italic, [MARK:link:0]...[/MARK:link:0] for links, and "
+"[MARK:comment:0]...[/MARK:comment:0] for comments. You MUST preserve these "
+"markers exactly. Do not modify them."
+msgstr ""
+"文本还包含格式标记，例如 [MARK:strong:0]...[/MARK:strong:0] "
+"表示粗体，[MARK:em:0]...[/MARK:em:0] 表示斜体，[MARK:link:0]...[/MARK:link:0] "
+"表示链接，[MARK:comment:0]...[/MARK:comment:0] 表示注释。您必须准确保留这些标记。不要修改它们。"
+
+#: llm/static/js/modules/llm/editor.js:697
+msgid ""
+"Do not rewrite the text. Instead, briefly explain what could be improved "
+"about it. Respond with one or more short comments, one per line."
+msgstr "不要重写文本。相反，简要解释一下可以改进的地方。回复一条或多条简短评论，每行一条。"
+
+#: llm/static/js/modules/llm/editor.js:699
+#, javascript-format
+msgid ""
+"Translate every sentence to %s. Do not improve or rewrite the text in the "
+"original language."
+msgstr "将每个句子翻译为 %s。不要用原始语言改进或重写文本。"
+
+#: llm/static/js/modules/llm/editor.js:705
+msgid ""
+"Return ONLY one or more short comments, one per line. Do not include these "
+"instructions, the context, or any explanations. Do not rewrite the text."
+msgstr "仅返回一个或多个简短注释，每行一个。请勿包含这些说明、上下文或任何解释。不要重写文本。"
+
+#: llm/static/js/modules/llm/editor.js:711
+#, javascript-format
+msgid ""
+"Return ONLY the %s translation of the text below. Do not return any part of "
+"it in the original language or any other language. Do not include these "
+"instructions, the context, or any explanations. Do not quote the text. "
+"Preserve all placeholders exactly."
+msgstr ""
+"仅返回以下文本的 %s 翻译。请勿以原始语言或任何其他语言返回其任何部分。请勿包含这些说明、上下文或任何解释。不要引用文本。准确保留所有占位符。"
+
+#: llm/static/js/modules/llm/editor.js:717
+msgid ""
+"Return ONLY the translation of the text below in the language requested "
+"above. Do not return any part of it in the original language or any other "
+"language. Do not include these instructions, the context, or any "
+"explanations. Do not quote the text. Preserve all placeholders exactly."
+msgstr ""
+"仅返回上面要求的语言的下面文本的翻译。请勿以原始语言或任何其他语言返回其任何部分。请勿包含这些说明、上下文或任何解释。不要引用文本。准确保留所有占位符。"
+
+#: llm/static/js/modules/llm/editor.js:722
+msgid ""
+"Return ONLY the improved version of the text below. If the text is already "
+"correct and needs no changes, return it exactly as provided. Do not include "
+"these instructions, the context, or any explanations in your response. Do "
+"not quote the text. Preserve all placeholders exactly."
+msgstr ""
+"仅返回以下文本的改进版本。如果文本已经正确并且不需要更改，则完全按照提供的方式返回。不要在您的回复中包含这些说明、上下文或任何解释。不要引用文本。准确保留所有占位符。"
+
+#: llm/static/js/modules/llm/editor.js:726
+msgid "TEXT TO IMPROVE:"
+msgstr "待改进的文字："
+
+#: llm/static/js/modules/llm/editor.js:738
+#: llm/static/js/modules/llm/editor.js:1985
+msgid "LLM request failed."
+msgstr "LLM 请求失败。"
+
+#: llm/static/js/modules/llm/editor.js:1497
+msgid ""
+"The LLM returned an unexpected placeholder. Please try again with different "
+"instructions."
+msgstr "法学硕士返回了一个意外的占位符。请使用不同的说明重试。"
+
+#: llm/static/js/modules/llm/editor.js:1883
+#: llm/static/js/modules/llm/editor.js:1994
+msgid "Comments are not available."
+msgstr "无法发表评论。"
+
+#: llm/static/js/modules/llm/editor.js:1921
+msgid "DOCUMENT:"
+msgstr "文档："
+
+#: llm/static/js/modules/llm/editor.js:1930
+msgid "FOOTNOTES:"
+msgstr "脚注："
+
+#: llm/static/js/modules/llm/editor.js:1938
+msgid "BIBLIOGRAPHY:"
+msgstr "参考书目："
+
+#: llm/static/js/modules/llm/editor.js:1946
+msgid "Reading document..."
+msgstr "正在阅读文档..."
+
+#: llm/static/js/modules/llm/editor.js:1949
+msgid "Sending document to LLM..."
+msgstr "正在向 LLM 发送文件..."
+
+#: llm/static/js/modules/llm/editor.js:1956
+msgid "Adding comment..."
+msgstr "添加评论..."
+
+#: llm/static/js/modules/llm/editor.js:1963
+msgid "LLM document comment added."
+msgstr "添加了 LLM 文档注释。"
+
+#: llm/static/js/modules/llm/editor.js:1967
+msgid ""
+"You are reviewing an entire document. Provide a comment about the document "
+"as a whole."
+msgstr "您正在审阅整个文档。提供有关整个文档的评论。"
+
+#: llm/static/js/modules/llm/editor.js:1970
+msgid ""
+"Return ONLY your comment about the entire document. Do not include these "
+"instructions, the context, or any explanations. Do not rewrite the text."
+msgstr "仅返回您对整个文档的评论。请勿包含这些说明、上下文或任何解释。不要重写文本。"
+
+#: llm/static/js/modules/llm/editor.js:1973
+msgid "DOCUMENT TO REVIEW:"
+msgstr "要审查的文件："
+
+#: llm/static/js/modules/llm/profile.js:67
+msgid "Please enter an API URL."
+msgstr "请输入 API URL。"
+
+#: llm/static/js/modules/llm/profile.js:71
+msgid "Please enter an API key."
+msgstr "请输入 API 密钥。"
+
+#: llm/static/js/modules/llm/profile.js:75
+msgid "Fetching models..."
+msgstr "正在获取模型..."
+
+#: llm/static/js/modules/llm/profile.js:84
+#: llm/static/js/modules/llm/profile.js:102
+msgid "Could not fetch models."
+msgstr "无法获取模型。"
+
+#: llm/static/js/modules/llm/profile.js:89
+msgid "No models found."
+msgstr "没有找到型号。"
+
+#: llm/static/js/modules/llm/profile.js:99
+msgid "Models loaded."
+msgstr "模型已加载。"
+
+#: llm/static/js/modules/llm/profile.js:118
+msgid "Could not save LLM preferences"
+msgstr "无法保存 LLM 首选项"
+
+#: llm/static/js/modules/llm/review_dialog.js:17
+msgid "Review LLM proposal"
+msgstr "审查法学硕士提案"
+
+#: llm/static/js/modules/llm/review_dialog.js:25
+msgid "Apply directly"
+msgstr "直接申请"
+
+#: llm/static/js/modules/llm/review_dialog.js:30
+msgid "Apply as tracked change"
+msgstr "应用为跟踪变更"
+
+#: llm/static/js/modules/llm/review_dialog.js:35
+msgid "Ignore"
+msgstr "忽略"
+
+#: llm/static/js/modules/llm/templates.js:4
+msgid "citation"
+msgstr "引文"
+
+#: llm/static/js/modules/llm/templates.js:5
+msgid "equation"
+msgstr "方程"
+
+#: llm/static/js/modules/llm/templates.js:6
+msgid "cross-reference"
+msgstr "交叉引用"
+
+#: llm/static/js/modules/llm/templates.js:7
+msgid "footnote"
+msgstr "脚注"
+
+#: llm/static/js/modules/llm/templates.js:16
+msgid "non-text element"
+msgstr "非文本元素"
+
+#: llm/static/js/modules/llm/templates.js:52
+msgid "Instructions"
+msgstr "指示"
+
+#: llm/static/js/modules/llm/templates.js:57
+msgid "e.g. Fix the grammar in this text"
+msgstr "例如修复此文本中的语法"
+
+#: llm/static/js/modules/llm/templates.js:62
+msgid "Output mode"
+msgstr "输出方式"
+
+#: llm/static/js/modules/llm/templates.js:70
+msgid "Review proposed changed before applying (right-click)"
+msgstr "申请前审查建议的更改（右键单击）"
+
+#: llm/static/js/modules/llm/templates.js:74
+msgid "Apply proposals directly to the document"
+msgstr "将提案直接应用于文档"
+
+#: llm/static/js/modules/llm/templates.js:78
+msgid "Apply proposals as tracked changes"
+msgstr "将提案应用为跟踪更改"
+
+#: llm/static/js/modules/llm/templates.js:82
+msgid "Add LLM suggestions as comments on the text"
+msgstr "添加 LLM 建议作为文本注释"
+
+#: llm/static/js/modules/llm/templates.js:86
+msgid "Add a single comment on the entire document"
+msgstr "对整个文档添加一条评论"
+
+#: llm/static/js/modules/llm/templates.js:93
+msgid "Quality checks"
+msgstr "质量检查"
+
+#: llm/static/js/modules/llm/templates.js:96
+msgid "LLM is expected to translate the text to another language"
+msgstr "LLM预计将文本翻译成另一种语言"
+
+#: llm/static/js/modules/llm/templates.js:100
+msgid "Reject paragraphs/headings whose length differs by more than"
+msgstr "拒绝长度相差超过的段落/标题"
+
+#: llm/static/js/modules/llm/templates.js:102
+msgid "from the original"
+msgstr "从原来的"
+
+#: llm/static/js/modules/llm/templates.js:106
+msgid "Require every paragraph/heading to be modified by the LLM"
+msgstr "要求法学硕士修改每个段落/标题"
+
+#: llm/static/js/modules/llm/templates.js:110
+msgid "Reject paragraphs/headings where fewer than"
+msgstr "拒绝少于以下的段落/标题"
+
+#: llm/static/js/modules/llm/templates.js:112
+msgid "of words differ from the original"
+msgstr "词与原文不同"
+
+#: llm/static/js/modules/llm/templates.js:118
+msgid "Text to improve"
+msgstr "待改进的文字"
+
+#: llm/static/js/modules/llm/templates.js:134
+msgid "Original text"
+msgstr "原文"
+
+#: llm/static/js/modules/llm/templates.js:146
+msgid "Proposed text by"
+msgstr "拟议案文由"
+
+#: llm/static/js/modules/llm/templates.js:160
+msgid "LLM settings"
+msgstr "法学硕士设置"
+
+#: llm/static/js/modules/llm/templates.js:162
+msgid ""
+"Configure the API key, URL and model for your preferred LLM service. The URL"
+" should point to an OpenAI-compatible chat completions endpoint."
+msgstr "为您首选的 LLM 服务配置 API 密钥、URL 和模型。 URL 应指向与 OpenAI 兼容的聊天完成端点。"
+
+#: llm/static/js/modules/llm/templates.js:164
+msgid "API URL"
+msgstr "API网址"
+
+#: llm/static/js/modules/llm/templates.js:168
+msgid "API key"
+msgstr "API密钥"
+
+#: llm/static/js/modules/llm/templates.js:169
+msgid "Using server-provided API key"
+msgstr "使用服务器提供的 API 密钥"
+
+#: llm/static/js/modules/llm/templates.js:169
+msgid "Your API key"
+msgstr "您的 API 密钥"
+
+#: llm/static/js/modules/llm/templates.js:170
+msgid "Leave empty to use the API key provided by the server operator."
+msgstr "留空以使用服务器运营商提供的 API 密钥。"
+
+#: llm/static/js/modules/llm/templates.js:174
+msgid "Fetch models"
+msgstr "获取模型"
+
+#: llm/static/js/modules/llm/templates.js:179
+msgid "Model"
+msgstr "模型"
+
+#: llm/static/js/modules/llm/templates.js:181
+msgid "Fetch models first"
+msgstr "首先获取模型"
+
+#: llm/static/js/modules/llm/templates.js:183
+msgid "Or enter model name manually"
+msgstr "或者手动输入型号名称"
