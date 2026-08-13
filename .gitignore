@@ -17,3 +17,4 @@ fiduswriter/configuration.py
 fiduswriter/fiduswriter.sql
 *.zip
 *.sql
+node_modules/

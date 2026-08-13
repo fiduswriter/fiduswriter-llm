@@ -1,6 +1,6 @@
 import {diffWordsWithSpace} from "diff"
-import {AddMarkStep} from "prosemirror-transform"
 import {ProgressTask, addAlert, gettext, interpolate, postJson} from "fwtoolkit"
+import {AddMarkStep} from "prosemirror-transform"
 
 import {LLMDialog} from "./dialog"
 import {
@@ -336,9 +336,8 @@ export class EditorLLM {
                     node: child
                 }
                 if (child.type.name === "footnote") {
-                    placeholder.footnoteText = this.serializeFootnoteContent(
-                        child
-                    )
+                    placeholder.footnoteText =
+                        this.serializeFootnoteContent(child)
                 }
                 placeholders.push(placeholder)
                 const marks = this.filterMarks(child.marks)
@@ -370,10 +369,7 @@ export class EditorLLM {
     computePlaceholderPositions(block) {
         let offset = 1
         block.node.forEach(child => {
-            if (
-                child.isInline &&
-                PLACEHOLDER_TYPES.includes(child.type.name)
-            ) {
+            if (child.isInline && PLACEHOLDER_TYPES.includes(child.type.name)) {
                 const placeholder = block.placeholders.find(
                     p => p.node === child
                 )
@@ -388,11 +384,9 @@ export class EditorLLM {
     filterMarks(marks) {
         return marks.filter(
             mark =>
-                ![
-                    "deletion",
-                    "insertion",
-                    "format_change"
-                ].includes(mark.type.name)
+                !["deletion", "insertion", "format_change"].includes(
+                    mark.type.name
+                )
         )
     }
 
@@ -413,9 +407,9 @@ export class EditorLLM {
     }
 
     serializeMarkTags(marks, registry) {
-        const markList = marks.slice().sort((a, b) =>
-            a.type.name.localeCompare(b.type.name)
-        )
+        const markList = marks
+            .slice()
+            .sort((a, b) => a.type.name.localeCompare(b.type.name))
         let open = ""
         let close = ""
         markList.forEach(mark => {
@@ -537,7 +531,9 @@ export class EditorLLM {
                             this.applyCommentsToRange({
                                 view,
                                 from: placeholder.absPos,
-                                to: placeholder.absPos + placeholder.node.nodeSize,
+                                to:
+                                    placeholder.absPos +
+                                    placeholder.node.nodeSize,
                                 commentsText: improvedFootnoteText,
                                 llmUser
                             })
@@ -613,8 +609,7 @@ export class EditorLLM {
                                 footnoteImprovements
                             })
                         }
-                        offset +=
-                            view.state.doc.content.size - docSizeBefore
+                        offset += view.state.doc.content.size - docSizeBefore
                     }
                 }
             }
@@ -933,7 +928,8 @@ export class EditorLLM {
 
     blockHasFootnoteContent(placeholders) {
         return placeholders.some(
-            p => p.type === "footnote" && p.footnoteText && p.footnoteText.trim()
+            p =>
+                p.type === "footnote" && p.footnoteText && p.footnoteText.trim()
         )
     }
 
@@ -1464,7 +1460,9 @@ export class EditorLLM {
                     markId,
                     mark,
                     children: [],
-                    marks: mark ? [...current.marks, mark] : current.marks.slice()
+                    marks: mark
+                        ? [...current.marks, mark]
+                        : current.marks.slice()
                 }
                 current.children.push(newNode)
                 stack.push(newNode)
@@ -1534,10 +1532,7 @@ export class EditorLLM {
                     const improvement = footnoteImprovements.get(
                         child.placeholder.index
                     )
-                    if (
-                        improvement &&
-                        child.placeholder.type === "footnote"
-                    ) {
+                    if (improvement && child.placeholder.type === "footnote") {
                         nodes.push(
                             this.buildFootnoteNode(
                                 child.placeholder.node,
@@ -1650,9 +1645,7 @@ export class EditorLLM {
 
     extractPlainTextFromRuns(runs) {
         return runs
-            .map(run =>
-                run.type === "text" ? run.text : run.placeholder.id
-            )
+            .map(run => (run.type === "text" ? run.text : run.placeholder.id))
             .join("")
     }
 
@@ -1689,9 +1682,7 @@ export class EditorLLM {
                             )
                         )
                     } else {
-                        nodes.push(
-                            node.mark(node.marks.concat(insertionMark))
-                        )
+                        nodes.push(node.mark(node.marks.concat(insertionMark)))
                     }
                 })
                 improvedOffset += diff.value.length
@@ -1712,9 +1703,7 @@ export class EditorLLM {
                             )
                         )
                     } else {
-                        nodes.push(
-                            node.mark(node.marks.concat(deletionMark))
-                        )
+                        nodes.push(node.mark(node.marks.concat(deletionMark)))
                     }
                 })
                 sourceOffset += diff.value.length
@@ -1767,9 +1756,7 @@ export class EditorLLM {
                             )
                         )
                     } else {
-                        nodes.push(
-                            node.mark(node.marks.concat(insertionMark))
-                        )
+                        nodes.push(node.mark(node.marks.concat(insertionMark)))
                     }
                 })
                 improvedOffset += diff.value.length
@@ -1793,7 +1780,13 @@ export class EditorLLM {
         return nodes
     }
 
-    sliceOriginalRuns(runs, start, end, schema, footnoteImprovements = new Map()) {
+    sliceOriginalRuns(
+        runs,
+        start,
+        end,
+        schema,
+        footnoteImprovements = new Map()
+    ) {
         const nodes = []
         for (const run of runs) {
             if (run.end <= start) {
@@ -1830,7 +1823,13 @@ export class EditorLLM {
         return nodes
     }
 
-    sliceImprovedRuns(runs, start, end, schema, footnoteImprovements = new Map()) {
+    sliceImprovedRuns(
+        runs,
+        start,
+        end,
+        schema,
+        footnoteImprovements = new Map()
+    ) {
         const nodes = []
         for (const run of runs) {
             if (run.end <= start) {
