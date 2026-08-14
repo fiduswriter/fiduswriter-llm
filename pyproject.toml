@@ -24,4 +24,4 @@ classifiers=[
 ]
 
 [project.urls]
-repository = "https://codeberg.org/fiduswriter/fiduswriter-llm"
+repository = "https://codeberg.org/fiduswriter/fiduswriter-llm-plugin"

@@ -40,7 +40,7 @@ function getFidusWriterPath() {
         }
 
         // Fallback: try to find fiduswriter core by looking in parent directories
-        // Assumes fiduswriter and fiduswriter-pandoc are sibling directories
+        // Assumes fiduswriter and fiduswriter-pandoc-plugin are sibling directories
         const pluginParent = path.resolve(pluginDir, "..")
         const fiduswriterCore = path.join(
             pluginParent,
@@ -112,7 +112,7 @@ function getBooksPath() {
     }
 
     // Fallback: try to find fiduswriter-books by looking in parent directories.
-    // Assumes fiduswriter-books and fiduswriter-pandoc are sibling directories.
+    // Assumes fiduswriter-books and fiduswriter-pandoc-plugin are sibling directories.
     const pluginDir = path.resolve(__dirname, "..")
     const pluginParent = path.resolve(pluginDir, "..")
     const candidate = path.join(
